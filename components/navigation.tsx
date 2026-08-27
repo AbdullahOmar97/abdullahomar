@@ -68,17 +68,18 @@ export function Navigation() {
           aria-label={t.a11y?.navAriaLabel || "Main Navigation"}
           className="container mx-auto max-w-6xl px-6 lg:px-8 py-4"
         >
-          <div className={cn("flex items-center justify-between", isRTL && "flex-row-reverse")}>
+          <div className="flex items-center justify-between">
             <a
               href="#"
               className="text-xl font-bold tracking-tight text-foreground focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary"
               aria-label={t.a11y?.logoAria || "Abdullah Omar - Home"}
             >
-              AO<span className="text-primary" aria-hidden="true">.</span>
+              {language === "ar" ? "عبدالله عمر" : "Abdullah Omar"}
+              <span className="text-primary" aria-hidden="true">.</span>
             </a>
 
             {/* Desktop Navigation */}
-            <ul className={cn("hidden md:flex items-center gap-8", isRTL && "flex-row-reverse")}>
+            <ul className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
                 <li key={item.href}>
                   <a
@@ -91,7 +92,7 @@ export function Navigation() {
               ))}
             </ul>
 
-            <div className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
+            <div className="flex items-center gap-2">
               <LanguageToggle />
               <ThemeToggle />
 
