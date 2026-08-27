@@ -1,73 +1,111 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ServiceCard } from "@/components/services/service-card"
 import { SubscriptionModal } from "@/components/services/subscription-modal"
 import { Navigation } from "@/components/navigation"
-import { useLanguage } from "@/lib/language-context"
+import { useLanguage, LanguageProvider } from "@/lib/language-context"
 import { getTranslation } from "@/lib/translations"
-import { LanguageProvider } from "@/lib/language-context"
 import { getServices } from "@/lib/services"
 
+interface DBService {
+  id: string
+  titleKey: string
+  titleEn: string
+  titleAr: string
+  descriptionEn: string
+  descriptionAr: string
+  featuresEn: string[]
+  featuresAr: string[]
+  price: string | null
+}
+
 function ServicesPageContent() {
-    const { language } = useLanguage()
-    const t = getTranslation(language)
-    const router = useRouter()
-    const [modalOpen, setModalOpen] = useState(false)
-    const [selectedService, setSelectedService] = useState("")
+  const { language } = useLanguage()
+  const t = getTranslation(language)
+  const router = useRouter()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedService, setSelectedService] = useState("")
+  const [dbServices, setDbServices] = useState<DBService[]>([])
 
-    const services = getServices(t) // Use the helper function
+  useEffect(() => {
+    fetch("/api/services")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setDbServices(data.data)
+        }
+      })
+      .catch((err) => console.warn("Using static services fallback:", err))
+  }, [])
 
-    const handleSubscribe = (title: string) => {
-        setSelectedService(title)
-        setModalOpen(true)
-    }
+  const defaultServices = getServices(t)
 
-    const handleDetails = (id: string) => {
-        router.push(`/services/${id}`)
-    }
+  const servicesList =
+    dbServices.length > 0
+      ? dbServices.map((s) => ({
+          id: s.id,
+          title: language === "ar" ? s.titleAr : s.titleEn,
+          description: language === "ar" ? s.descriptionAr : s.descriptionEn,
+          price: s.price || "100",
+          features: language === "ar" ? s.featuresAr : s.featuresEn,
+        }))
+      : defaultServices
 
-    return (
-        <div className="min-h-screen bg-background">
-            <Navigation />
-            <main id="main-content" tabIndex={-1} className="container mx-auto max-w-6xl px-6 lg:px-8 py-24 focus:outline-none">
-                <div className="space-y-4 mb-12">
-                    <h1 className="text-4xl font-bold tracking-tight">{t.services.title}</h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl">
-                        {t.services.description}
-                    </p>
-                </div>
+  const handleSubscribe = (title: string) => {
+    setSelectedService(title)
+    setModalOpen(true)
+  }
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {services.map((service) => (
-                        <ServiceCard
-                            key={service.id}
-                            id={service.id}
-                            title={service.title}
-                            description={service.description}
-                            price={service.price}
-                            features={service.features}
-                            onSubscribe={() => handleSubscribe(service.title)}
-                            onDetails={() => handleDetails(service.id)}
-                        />
-                    ))}
-                </div>
-            </main>
+  const handleDetails = (id: string) => {
+    router.push(`/services/${id}`)
+  }
 
-            <SubscriptionModal
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-                serviceTitle={selectedService}
-            />
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="container mx-auto max-w-6xl px-6 lg:px-8 py-24 focus:outline-none"
+      >
+        <div className="space-y-4 mb-12">
+          <h1 className="text-4xl font-bold tracking-tight">{t.services.title}</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl">
+            {t.services.description}
+          </p>
         </div>
-    )
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {servicesList.map((service) => (
+            <ServiceCard
+              key={service.id}
+              id={service.id}
+              title={service.title}
+              description={service.description}
+              price={service.price}
+              features={service.features}
+              onSubscribe={() => handleSubscribe(service.title)}
+              onDetails={() => handleDetails(service.id)}
+            />
+          ))}
+        </div>
+      </main>
+
+      <SubscriptionModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        serviceTitle={selectedService}
+      />
+    </div>
+  )
 }
 
 export default function ServicesPage() {
-    return (
-        <LanguageProvider>
-            <ServicesPageContent />
-        </LanguageProvider>
-    )
+  return (
+    <LanguageProvider>
+      <ServicesPageContent />
+    </LanguageProvider>
+  )
 }

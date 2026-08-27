@@ -17,6 +17,7 @@ export function Navigation() {
   const navItems = [
     { label: t.nav.about, href: "/#about" },
     { label: t.nav.experience, href: "/#experience" },
+    { label: language === "ar" ? "المشاريع" : "Projects", href: "/#projects" },
     { label: t.nav.skills, href: "/#skills" },
     { label: t.nav.education, href: "/#education" },
     { label: t.nav.contact, href: "/#contact" },

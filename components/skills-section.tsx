@@ -1,11 +1,20 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { useLanguage } from "@/lib/language-context"
 import { getTranslation } from "@/lib/translations"
 import { cn } from "@/lib/utils"
 
-const skillsData = [
+interface DBSkill {
+  id: string
+  name: string
+  category: "languages" | "ai_ml" | "web_backend" | "databases" | "devops_cloud"
+  proficiency: number
+  featured: boolean
+}
+
+const defaultSkillsData = [
   {
     key: "languages",
     skills: ["Python", "JavaScript", "TypeScript", "SQL", "HTML", "CSS"],
@@ -50,11 +59,54 @@ const skillsData = [
 export function SkillsSection() {
   const { language, isRTL } = useLanguage()
   const t = getTranslation(language)
+  const [dbSkills, setDbSkills] = useState<DBSkill[]>([])
+
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data?.skills) && data.data.skills.length > 0) {
+          setDbSkills(data.data.skills)
+        }
+      })
+      .catch((err) => console.warn("Using fallback skills data:", err))
+  }, [])
 
   const getCategoryTitle = (key: string) => {
     const categories = t.skills.categories as Record<string, string>
     return categories[key] || key
   }
+
+  // If we have DB skills, we can group them or enhance categories
+  const categoriesToRender =
+    dbSkills.length > 0
+      ? [
+          {
+            key: "languages",
+            skills: dbSkills
+              .filter((s) => s.category === "languages")
+              .map((s) => s.name),
+          },
+          {
+            key: "aiMl",
+            skills: dbSkills
+              .filter((s) => s.category === "ai_ml")
+              .map((s) => s.name),
+          },
+          {
+            key: "backend",
+            skills: dbSkills
+              .filter((s) => s.category === "web_backend" || s.category === "databases")
+              .map((s) => s.name),
+          },
+          {
+            key: "cloud",
+            skills: dbSkills
+              .filter((s) => s.category === "devops_cloud")
+              .map((s) => s.name),
+          },
+        ].filter((cat) => cat.skills.length > 0)
+      : defaultSkillsData
 
   return (
     <section id="skills" className="py-24 scroll-mt-20">
@@ -63,25 +115,32 @@ export function SkillsSection() {
           <h2
             className={cn(
               "text-3xl font-bold text-foreground flex items-center gap-3",
-              isRTL && "flex-row-reverse justify-end",
+              isRTL && "flex-row-reverse justify-end"
             )}
           >
-            <span className="text-primary font-mono text-lg" aria-hidden="true">03.</span>
+            <span className="text-primary font-mono text-lg" aria-hidden="true">
+              04.
+            </span>
             {t.skills.title}
           </h2>
-          <div className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")} aria-hidden="true" />
+          <div
+            className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")}
+            aria-hidden="true"
+          />
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skillsData.map((category) => (
+          {categoriesToRender.map((category) => (
             <div
               key={category.key}
               className={cn(
                 "p-6 bg-card rounded-lg border border-border hover:border-primary/50 transition-colors",
-                isRTL && "text-right",
+                isRTL && "text-right"
               )}
             >
-              <h3 className="font-semibold text-foreground mb-4 text-lg">{getCategoryTitle(category.key)}</h3>
+              <h3 className="font-semibold text-foreground mb-4 text-lg">
+                {getCategoryTitle(category.key)}
+              </h3>
               <div className={cn("flex flex-wrap gap-2", isRTL && "justify-end")}>
                 {category.skills.map((skill) => (
                   <Badge

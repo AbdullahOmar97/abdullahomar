@@ -46,6 +46,7 @@ export function AIChatbot() {
   const [isSpeakingTTS, setIsSpeakingTTS] = useState(false)
   const [autoSpeak, setAutoSpeak] = useState(true)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [conversationId, setConversationId] = useState<string | null>(null)
 
   // Live session state
   const [liveStatus, setLiveStatus] = useState<LiveStatus>("idle")
@@ -141,8 +142,18 @@ export function AIChatbot() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [...messages, userMsg] }),
+        body: JSON.stringify({
+          messages: [...messages, userMsg],
+          conversationId,
+          language,
+          persist: true,
+        }),
       })
+
+      const returnedConvId = response.headers.get("X-Conversation-Id")
+      if (returnedConvId && !conversationId) {
+        setConversationId(returnedConvId)
+      }
 
       if (!response.body) throw new Error("No response body")
 
