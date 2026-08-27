@@ -38,7 +38,7 @@ export function ServiceCard({
                 {imageSrc ? (
                     <Image src={imageSrc} alt={title} fill className="object-cover" />
                 ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                    <div className="flex items-center justify-center h-full text-muted-foreground" aria-hidden="true">
                         {/* Placeholder if no image provided */}
                         <span className="text-4xl">✨</span>
                     </div>
@@ -59,17 +59,17 @@ export function ServiceCard({
                 <ul className="grid gap-2 text-sm text-foreground/80">
                     {features.slice(0, 3).map((feature, i) => (
                         <li key={i} className="flex items-center gap-2">
-                            <Check className="h-4 w-4 text-primary shrink-0" />
+                            <Check className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />
                             <span className="truncate">{feature}</span>
                         </li>
                     ))}
                 </ul>
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-4">
-                <Button onClick={onSubscribe} className="w-full">
+                <Button onClick={onSubscribe} aria-label={`${t.services.subscribe} - ${title}`} className="w-full">
                     {t.services.subscribe}
                 </Button>
-                <Button onClick={onDetails} variant="outline" className="w-full">
+                <Button onClick={onDetails} aria-label={`${t.services.details} - ${title}`} variant="outline" className="w-full">
                     {t.services.details}
                 </Button>
             </CardFooter>

@@ -199,6 +199,28 @@ export const translations = {
         text: "Driven by a passion for both engineering and AI, my focus is on bridging the gap between traditional civil engineering methodologies and modern digital transformation. I aim to deliver intelligent, data-driven solutions that enhance efficiency, optimize performance, and improve productivity across the entire infrastructure lifecycle — from planning and design to execution and maintenance — enabling organizations to adopt smarter and more optimized operational systems.",
       },
     },
+    // Accessibility
+    a11y: {
+      skipLink: "Skip to main content",
+      navAriaLabel: "Main navigation",
+      openMenu: "Open navigation menu",
+      closeMenu: "Close navigation menu",
+      themeToggle: "Toggle theme, current theme:",
+      newTab: "(opens in a new tab)",
+      logoAria: "Abdullah Omar - Home",
+      emailAria: "Send an email to Abdullah Omar",
+      phoneAria: "Call Abdullah Omar",
+      chatAria: {
+        open: "Open AI Assistant",
+        close: "Close AI Assistant",
+        mute: "Mute voice responses",
+        unmute: "Unmute voice responses",
+        voiceStart: "Start voice input",
+        voiceStop: "Stop voice input",
+        send: "Send message",
+        inputLabel: "Chat message input",
+      },
+    },
     // Footer
     footer: {
       rights: "All rights reserved.",
@@ -400,6 +422,28 @@ export const translations = {
       vision: {
         title: "الرؤية المهنية",
         text: "مدفوعاً بشغف للهندسة والذكاء الاصطناعي، أركز على سد الفجوة بين منهجيات الهندسة المدنية التقليدية والتحول الرقمي الحديث. أهدف إلى تقديم حلول ذكية مبنية على البيانات تعزز الكفاءة، وتحسن الأداء، وتزيد الإنتاجية عبر دورة حياة البنية التحتية بأكملها — من التخطيط والتصميم إلى التنفيذ والصيانة — مما يمكّن المؤسسات من تبني أنظمة تشغيلية أذكى وأكثر تحسيناً.",
+      },
+    },
+    // Accessibility
+    a11y: {
+      skipLink: "الانتقال إلى المحتوى الرئيسي",
+      navAriaLabel: "التنقل الرئيسي",
+      openMenu: "فتح قائمة التنقل",
+      closeMenu: "إغلاق قائمة التنقل",
+      themeToggle: "تبديل المظهر، المظهر الحالي:",
+      newTab: "(يفتح في علامة تبويب جديدة)",
+      logoAria: "عبدالله عمر - الصفحة الرئيسية",
+      emailAria: "إرسال بريد إلكتروني إلى عبدالله عمر",
+      phoneAria: "الاتصال بعبدالله عمر",
+      chatAria: {
+        open: "فتح المساعد الذكي",
+        close: "إغلاق المساعد الذكي",
+        mute: "كتم الردود الصوتية",
+        unmute: "تفعيل الردود الصوتية",
+        voiceStart: "بدء الإدخال الصوتي",
+        voiceStop: "إيقاف الإدخال الصوتي",
+        send: "إرسال الرسالة",
+        inputLabel: "حقل كتابة الرسالة",
       },
     },
     // Footer

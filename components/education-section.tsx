@@ -19,10 +19,10 @@ export function EducationSection() {
               isRTL && "flex-row-reverse justify-end",
             )}
           >
-            <span className="text-primary font-mono text-lg">04.</span>
+            <span className="text-primary font-mono text-lg" aria-hidden="true">04.</span>
             {t.education.title}
           </h2>
-          <div className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")} />
+          <div className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")} aria-hidden="true" />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -34,7 +34,7 @@ export function EducationSection() {
                 isRTL && "flex-row-reverse justify-end",
               )}
             >
-              <GraduationCap className="text-primary" />
+              <GraduationCap className="text-primary" aria-hidden="true" />
               {t.education.educationLabel}
             </h3>
             <div className="space-y-4">
@@ -64,7 +64,7 @@ export function EducationSection() {
                 isRTL && "flex-row-reverse justify-end",
               )}
             >
-              <Award className="text-primary" />
+              <Award className="text-primary" aria-hidden="true" />
               {t.education.certificationsLabel}
             </h3>
             <div className="space-y-4">

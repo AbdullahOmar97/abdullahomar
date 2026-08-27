@@ -66,10 +66,10 @@ export function SkillsSection() {
               isRTL && "flex-row-reverse justify-end",
             )}
           >
-            <span className="text-primary font-mono text-lg">03.</span>
+            <span className="text-primary font-mono text-lg" aria-hidden="true">03.</span>
             {t.skills.title}
           </h2>
-          <div className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")} />
+          <div className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")} aria-hidden="true" />
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

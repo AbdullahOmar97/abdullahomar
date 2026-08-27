@@ -3,12 +3,16 @@
 import { useState, useEffect } from "react"
 import { Sun, Moon, Monitor } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useLanguage } from "@/lib/language-context"
+import { getTranslation } from "@/lib/translations"
 
 type Theme = "light" | "dark" | "system"
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("system")
   const [mounted, setMounted] = useState(false)
+  const { language } = useLanguage()
+  const t = getTranslation(language)
 
   useEffect(() => {
     setMounted(true)
@@ -58,36 +62,41 @@ export function ThemeToggle() {
   const getIcon = () => {
     switch (theme) {
       case "light":
-        return <Sun size={18} />
+        return <Sun size={18} aria-hidden="true" />
       case "dark":
-        return <Moon size={18} />
+        return <Moon size={18} aria-hidden="true" />
       case "system":
-        return <Monitor size={18} />
+        return <Monitor size={18} aria-hidden="true" />
     }
   }
 
   const getLabel = () => {
     switch (theme) {
       case "light":
-        return "Light"
+        return language === "ar" ? "فاتح" : "Light"
       case "dark":
-        return "Dark"
+        return language === "ar" ? "داكن" : "Dark"
       case "system":
-        return "System"
+        return language === "ar" ? "تلقائي" : "System"
     }
   }
 
+  const ariaLabelText = `${t.a11y?.themeToggle || "Toggle theme, current theme:"} ${getLabel()}`
+
   return (
     <button
+      type="button"
       onClick={cycleTheme}
       className={cn(
         "flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
         "bg-secondary/50 hover:bg-secondary text-foreground",
         "transition-all duration-300 border border-border/50",
+        "focus-visible:outline-2 focus-visible:outline-primary",
       )}
-      title={`the current status: ${getLabel()}`}
+      aria-label={ariaLabelText}
+      title={ariaLabelText}
     >
-      <span className="transition-transform duration-300">{getIcon()}</span>
+      <span className="transition-transform duration-300" aria-hidden="true">{getIcon()}</span>
       <span className="hidden sm:inline text-xs">{getLabel()}</span>
     </button>
   )

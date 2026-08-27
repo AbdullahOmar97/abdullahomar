@@ -102,5 +102,5 @@ export const AudioOrbVisualizer: React.FC<Props> = ({ inputNode, outputNode }) =
     };
   }, [inputNode, outputNode]);
 
-  return <div ref={containerRef} className="absolute inset-0 w-full h-full" />;
+  return <div ref={containerRef} className="absolute inset-0 w-full h-full" aria-hidden="true" />;
 };

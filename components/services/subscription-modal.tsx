@@ -47,26 +47,29 @@ export function SubscriptionModal({ isOpen, onClose, serviceTitle }: Subscriptio
                         {t.services.modal.description}
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+                <form onSubmit={handleSubmit} aria-busy={isLoading} className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="phone" className={isRTL ? "text-right" : "text-left"}>
                             {t.services.modal.phoneLabel}
                         </Label>
                         <Input
                             id="phone"
+                            name="phone"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             placeholder={t.services.modal.phonePlaceholder}
                             className={isRTL ? "text-right" : "text-left"}
                             required
+                            aria-required="true"
                             type="tel"
+                            autoComplete="tel"
                         />
                     </div>
                     <DialogFooter className={isRTL ? "sm:flex-row-reverse" : ""}>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} className="focus-visible:outline-2 focus-visible:outline-primary">
                             {isLoading ? "..." : t.services.modal.submit}
                         </Button>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button type="button" variant="outline" onClick={onClose} className="focus-visible:outline-2 focus-visible:outline-primary">
                             {t.services.modal.cancel}
                         </Button>
                     </DialogFooter>

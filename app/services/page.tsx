@@ -31,7 +31,7 @@ function ServicesPageContent() {
     return (
         <div className="min-h-screen bg-background">
             <Navigation />
-            <main className="container mx-auto max-w-6xl px-6 lg:px-8 py-24">
+            <main id="main-content" tabIndex={-1} className="container mx-auto max-w-6xl px-6 lg:px-8 py-24 focus:outline-none">
                 <div className="space-y-4 mb-12">
                     <h1 className="text-4xl font-bold tracking-tight">{t.services.title}</h1>
                     <p className="text-xl text-muted-foreground max-w-2xl">

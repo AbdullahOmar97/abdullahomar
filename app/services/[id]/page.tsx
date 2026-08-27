@@ -38,13 +38,14 @@ function ServiceDetailContent() {
     return (
         <div className="min-h-screen bg-background">
             <Navigation />
-            <main className="container mx-auto max-w-6xl px-6 lg:px-8 py-24">
+            <main id="main-content" tabIndex={-1} className="container mx-auto max-w-6xl px-6 lg:px-8 py-24 focus:outline-none">
                 <Button
                     variant="ghost"
-                    className="mb-8 gap-2"
+                    className="mb-8 gap-2 focus-visible:outline-2 focus-visible:outline-primary"
                     onClick={() => router.push("/services")}
+                    aria-label={isRTL ? "العودة إلى صفحة الخدمات" : "Back to Services page"}
                 >
-                    {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+                    {isRTL ? <ArrowRight size={16} aria-hidden="true" /> : <ArrowLeft size={16} aria-hidden="true" />}
                     {isRTL ? "العودة للخدمات" : "Back to Services"}
                 </Button>
 
@@ -53,7 +54,7 @@ function ServiceDetailContent() {
                         {service.imageSrc ? (
                             <Image src={service.imageSrc} alt={service.title} fill className="object-cover" />
                         ) : (
-                            <div className="flex items-center justify-center h-full text-muted-foreground text-6xl">✨</div>
+                            <div className="flex items-center justify-center h-full text-muted-foreground text-6xl" aria-hidden="true">✨</div>
                         )}
                     </div>
 
@@ -74,11 +75,11 @@ function ServiceDetailContent() {
                             <h2 className="text-xl font-semibold mb-4">{t.services.details}</h2>
                             <p className="text-foreground/90 mb-6">{service.details}</p>
 
-                            <h3 className="font-semibold mb-3">Key Features:</h3>
+                            <h3 className="font-semibold mb-3">{isRTL ? "الميزات الرئيسية:" : "Key Features:"}</h3>
                             <ul className="grid gap-3">
                                 {service.features.map((feature, i) => (
                                     <li key={i} className="flex items-center gap-3">
-                                        <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0">
+                                        <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0" aria-hidden="true">
                                             <Check size={14} />
                                         </div>
                                         <span>{feature}</span>

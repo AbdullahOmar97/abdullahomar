@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "./theme-toggle"
@@ -23,6 +23,15 @@ export function Navigation() {
     { label: t.nav.services, href: "/services" },
   ]
 
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+      }
+    },
+    [isMobileMenuOpen],
+  )
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
@@ -31,64 +40,99 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      window.addEventListener("keydown", handleKeyDown)
+      return () => window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isMobileMenuOpen, handleKeyDown])
+
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : "bg-transparent",
-      )}
-    >
-      <nav className="container mx-auto max-w-6xl px-6 lg:px-8 py-4">
-        <div className={cn("flex items-center justify-between", isRTL && "flex-row-reverse")}>
-          <a href="#" className="text-xl font-semibold text-foreground">
-            AO<span className="text-primary">.</span>
-          </a>
+    <>
+      {/* WCAG 2.4.1 Bypass Blocks - Skip to main content link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring font-medium"
+      >
+        {t.a11y?.skipLink || "Skip to main content"}
+      </a>
 
-          {/* Desktop Navigation */}
-          <ul className={cn("hidden md:flex items-center gap-8", isRTL && "flex-row-reverse")}>
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <a href={item.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-
-          <div className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
-            <LanguageToggle />
-            <ThemeToggle />
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden text-foreground"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
+      <header
+        role="banner"
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          isScrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : "bg-transparent",
+        )}
+      >
+        <nav
+          aria-label={t.a11y?.navAriaLabel || "Main Navigation"}
+          className="container mx-auto max-w-6xl px-6 lg:px-8 py-4"
+        >
+          <div className={cn("flex items-center justify-between", isRTL && "flex-row-reverse")}>
+            <a
+              href="#"
+              className="text-xl font-bold tracking-tight text-foreground focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary"
+              aria-label={t.a11y?.logoAria || "Abdullah Omar - Home"}
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
+              AO<span className="text-primary" aria-hidden="true">.</span>
+            </a>
 
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 pt-4 px-4 -mx-4 bg-background/95 backdrop-blur-md border-t border-border rounded-b-lg shadow-lg">
-            <ul className={cn("flex flex-col gap-4", isRTL && "items-end")}>
+            {/* Desktop Navigation */}
+            <ul className={cn("hidden md:flex items-center gap-8", isRTL && "flex-row-reverse")}>
               {navItems.map((item) => (
                 <li key={item.href}>
                   <a
                     href={item.href}
-                    className="text-base text-foreground hover:text-primary transition-colors block py-2 font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary px-1 py-0.5"
                   >
                     {item.label}
                   </a>
                 </li>
               ))}
             </ul>
+
+            <div className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
+              <LanguageToggle />
+              <ThemeToggle />
+
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden text-foreground p-2 rounded-md focus-visible:outline-2 focus-visible:outline-primary"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label={isMobileMenuOpen ? t.a11y?.closeMenu || "Close menu" : t.a11y?.openMenu || "Open menu"}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-nav-menu"
+              >
+                {isMobileMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
+              </button>
+            </div>
           </div>
-        )}
-      </nav>
-    </header>
+
+          {/* Mobile Navigation */}
+          {isMobileMenuOpen && (
+            <div
+              id="mobile-nav-menu"
+              role="region"
+              aria-label="Mobile Navigation"
+              className="md:hidden mt-4 pb-4 pt-4 px-4 -mx-4 bg-background/95 backdrop-blur-md border-t border-border rounded-b-lg shadow-lg"
+            >
+              <ul className={cn("flex flex-col gap-4", isRTL && "items-end")}>
+                {navItems.map((item) => (
+                  <li key={item.href} className="w-full">
+                    <a
+                      href={item.href}
+                      className="text-base text-foreground hover:text-primary transition-colors block py-2 font-medium focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </nav>
+      </header>
+    </>
   )
 }

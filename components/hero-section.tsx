@@ -1,5 +1,6 @@
 "use client"
 
+import { HeroShowcase } from "./hero-showcase"
 import { Github, Linkedin, Mail, Phone, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/lib/language-context"
@@ -11,9 +12,20 @@ export function HeroSection() {
   const t = getTranslation(language)
 
   return (
-    <section className="min-h-screen flex flex-col justify-center pt-20 lg:pt-0">
-      <div className={cn("grid lg:grid-cols-2 gap-12 items-center", isRTL && "lg:grid-flow-col-dense")}>
-        <div className={cn("space-y-6", isRTL && "text-right lg:order-2")}>
+    <section className="min-h-screen flex flex-col justify-center pt-24 pb-12 lg:py-0">
+      <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        {/* Mobile: Placed at the top above "Hello, I'm"; Desktop: Side column */}
+        <div className={cn("w-full flex justify-center order-first", isRTL ? "lg:order-1" : "lg:order-2")}>
+          <HeroShowcase />
+        </div>
+
+        {/* Text & Actions: Placed below artwork on mobile, adjacent column on desktop */}
+        <div
+          className={cn(
+            "space-y-6 order-2",
+            isRTL ? "text-right lg:order-2" : "text-left lg:order-1",
+          )}
+        >
           <div className="space-y-2">
             <p className="text-primary font-mono text-sm">{t.hero.greeting}</p>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground text-balance">{t.hero.name}</h1>
@@ -30,17 +42,18 @@ export function HeroSection() {
             )}
           >
             <span className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
-              <MapPin size={16} className="text-primary" />
+              <MapPin size={16} className="text-primary" aria-hidden="true" />
               {t.hero.location}
             </span>
             <a
               href="mailto:AbdullahOmar@outlook.com"
+              aria-label={t.a11y?.emailAria || "Send an email to Abdullah Omar at AbdullahOmar@outlook.com"}
               className={cn(
-                "flex items-center gap-2 hover:text-primary transition-colors",
+                "flex items-center gap-2 hover:text-primary transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary",
                 isRTL && "flex-row-reverse",
               )}
             >
-              <Mail size={16} className="text-primary" />
+              <Mail size={16} className="text-primary" aria-hidden="true" />
               AbdullahOmar@outlook.com
             </a>
           </div>
@@ -62,39 +75,27 @@ export function HeroSection() {
               href="https://linkedin.com/in/AbdullahOmar97"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors"
-              aria-label="LinkedIn"
+              className="text-muted-foreground hover:text-primary transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary p-1"
+              aria-label={`LinkedIn ${t.a11y?.newTab || "(opens in a new tab)"}`}
             >
-              <Linkedin size={22} />
+              <Linkedin size={22} aria-hidden="true" />
             </a>
             <a
               href="https://github.com/AbdullahOmar97"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors"
-              aria-label="GitHub"
+              className="text-muted-foreground hover:text-primary transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary p-1"
+              aria-label={`GitHub ${t.a11y?.newTab || "(opens in a new tab)"}`}
             >
-              <Github size={22} />
+              <Github size={22} aria-hidden="true" />
             </a>
             <a
               href="tel:+962787900948"
-              className="text-muted-foreground hover:text-primary transition-colors"
-              aria-label="Phone"
+              className="text-muted-foreground hover:text-primary transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary p-1"
+              aria-label={t.a11y?.phoneAria || "Call Abdullah Omar"}
             >
-              <Phone size={22} />
+              <Phone size={22} aria-hidden="true" />
             </a>
-          </div>
-        </div>
-
-        <div className={cn("hidden lg:flex justify-center", isRTL && "lg:order-1")}>
-          <div className="relative">
-            <div className="w-72 h-72 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-              <div className="w-60 h-60 rounded-full bg-card border border-border flex items-center justify-center">
-                <span className="text-6xl font-bold text-primary">AO</span>
-              </div>
-            </div>
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
-            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
           </div>
         </div>
       </div>

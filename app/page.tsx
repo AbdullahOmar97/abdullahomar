@@ -18,7 +18,7 @@ function PageContent() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container mx-auto max-w-6xl px-6 lg:px-8">
+      <main id="main-content" tabIndex={-1} className="container mx-auto max-w-6xl px-6 lg:px-8 focus:outline-none">
         <HeroSection />
         <AboutSection />
         <ExperienceSection />
@@ -26,7 +26,7 @@ function PageContent() {
         <EducationSection />
         <ContactSection />
       </main>
-      <footer className="border-t border-border py-8 mt-24">
+      <footer role="contentinfo" className="border-t border-border py-8 mt-24">
         <div className="container mx-auto max-w-6xl px-6 lg:px-8 text-center text-muted-foreground text-sm">
           <p>
             © {new Date().getFullYear()} Abdullah Omar. {t.footer.rights}

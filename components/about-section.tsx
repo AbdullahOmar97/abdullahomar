@@ -42,10 +42,10 @@ export function AboutSection() {
               isRTL && "flex-row-reverse justify-end",
             )}
           >
-            <span className="text-primary font-mono text-lg">01.</span>
+            <span className="text-primary font-mono text-lg" aria-hidden="true">01.</span>
             {t.about.title}
           </h2>
-          <div className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")} />
+          <div className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")} aria-hidden="true" />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -100,6 +100,7 @@ export function AboutSection() {
                     "w-8 h-8 text-primary mb-4 group-hover:scale-110 transition-transform",
                     isRTL && "mr-0 ml-auto",
                   )}
+                  aria-hidden="true"
                 />
                 <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.description}</p>

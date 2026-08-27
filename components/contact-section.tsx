@@ -55,9 +55,9 @@ export function ContactSection() {
       <div className="space-y-12">
         <div className="space-y-4 text-center">
           <h2 className="text-3xl font-bold text-foreground">
-            <span className="text-primary font-mono text-lg">05.</span> {t.contact.title}
+            <span className="text-primary font-mono text-lg" aria-hidden="true">05.</span> {t.contact.title}
           </h2>
-          <div className="w-20 h-1 bg-primary rounded-full mx-auto" />
+          <div className="w-20 h-1 bg-primary rounded-full mx-auto" aria-hidden="true" />
           <p className="text-muted-foreground max-w-2xl mx-auto mt-4">{t.contact.description}</p>
         </div>
 
@@ -74,13 +74,17 @@ export function ContactSection() {
                     isRTL && "flex-row-reverse",
                   )}
                 >
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0" aria-hidden="true">
                     <item.icon className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">{getContactLabel(item.key)}</p>
                     {item.href ? (
-                      <a href={item.href} className="text-foreground hover:text-primary transition-colors">
+                      <a
+                        href={item.href}
+                        aria-label={item.key === "email" ? (t.a11y?.emailAria || "Email Abdullah Omar") : (t.a11y?.phoneAria || "Call Abdullah Omar")}
+                        className="text-foreground hover:text-primary transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary"
+                      >
                         {item.value}
                       </a>
                     ) : (
@@ -100,10 +104,10 @@ export function ContactSection() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
-                    aria-label={link.label}
+                    className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors focus-visible:outline-2 focus-visible:outline-primary"
+                    aria-label={`${link.label} ${t.a11y?.newTab || "(opens in a new tab)"}`}
                   >
-                    <link.icon size={20} />
+                    <link.icon size={20} aria-hidden="true" />
                   </a>
                 ))}
               </div>
@@ -112,7 +116,7 @@ export function ContactSection() {
 
           {/* CTA Card */}
           <div className="bg-card rounded-lg border border-border p-8 flex flex-col items-center justify-center text-center space-y-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center" aria-hidden="true">
               <Send className="w-8 h-8 text-primary" />
             </div>
             <div className="space-y-2">
@@ -120,8 +124,8 @@ export function ContactSection() {
               <p className="text-muted-foreground text-sm">{t.contact.cta.description}</p>
             </div>
             <Button asChild size="lg" className="w-full">
-              <a href="mailto:AbdullahOmar@outlook.com">
-                <Mail className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+              <a href="mailto:AbdullahOmar@outlook.com" aria-label={t.a11y?.emailAria || "Send an email to Abdullah Omar"}>
+                <Mail className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} aria-hidden="true" />
                 {t.contact.cta.button}
               </a>
             </Button>
