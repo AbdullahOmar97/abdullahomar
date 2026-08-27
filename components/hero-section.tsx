@@ -58,14 +58,14 @@ export function HeroSection() {
             </a>
           </div>
 
-          <div className={cn("flex items-center gap-4 pt-4", isRTL && "flex-row-reverse justify-end")}>
-            <Button asChild>
+          <div className={cn("flex flex-wrap items-center gap-3 pt-4", isRTL && "flex-row-reverse justify-end")}>
+            <Button asChild className="w-full sm:w-auto">
               <a href="#contact">{t.hero.getInTouch}</a>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="w-full sm:w-auto">
               <a href="#experience">{t.hero.viewExperience}</a>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="w-full sm:w-auto">
               <a href="/services">{t.hero.viewServices}</a>
             </Button>
           </div>
