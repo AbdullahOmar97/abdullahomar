@@ -114,7 +114,7 @@ export function Navigation() {
               id="mobile-nav-menu"
               role="region"
               aria-label="Mobile Navigation"
-              className="md:hidden mt-4 pb-4 pt-4 px-4 -mx-4 bg-background/95 backdrop-blur-md border-t border-border rounded-b-lg shadow-lg"
+              className="md:hidden mt-4 pb-4 pt-4 px-4 w-full bg-background/95 backdrop-blur-md border border-border rounded-lg shadow-lg"
             >
               <ul className={cn("flex flex-col gap-4", isRTL && "items-end")}>
                 {navItems.map((item) => (

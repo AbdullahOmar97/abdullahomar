@@ -32,7 +32,7 @@ export function HeroShowcase({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex justify-center items-center w-full my-2 lg:my-0 perspective-1000",
+        "flex justify-center items-center w-full my-2 lg:my-0 perspective-1000 max-w-full overflow-visible",
         className,
       )}
       aria-hidden="true"
@@ -42,7 +42,7 @@ export function HeroShowcase({ className }: { className?: string }) {
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={handleMouseLeave}
-        className="relative group animate-hero-float cursor-pointer w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[450px]"
+        className="relative group animate-hero-float cursor-pointer w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[450px] mx-auto"
         style={{
           transformStyle: "preserve-3d",
           transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) scale3d(${isHovered ? 1.02 : 1}, ${isHovered ? 1.02 : 1}, 1)`,
@@ -50,9 +50,7 @@ export function HeroShowcase({ className }: { className?: string }) {
         }}
       >
         {/* Breathing multi-color ambient backlights */}
-        <div className="absolute -inset-2 bg-gradient-to-r from-primary/40 via-amber-500/30 to-primary/40 rounded-3xl blur-2xl animate-hero-glow pointer-events-none" />
-        <div className="absolute -top-6 sm:-top-10 -right-6 sm:-right-10 w-24 sm:w-36 h-24 sm:h-36 bg-primary/25 rounded-full blur-2xl sm:blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-6 sm:-bottom-10 -left-6 sm:-left-10 w-28 sm:w-44 h-28 sm:h-44 bg-amber-500/20 rounded-full blur-2xl sm:blur-3xl pointer-events-none" />
+        <div className="absolute -inset-1 sm:-inset-2 bg-gradient-to-r from-primary/40 via-amber-500/30 to-primary/40 rounded-3xl blur-xl sm:blur-2xl animate-hero-glow pointer-events-none" />
 
         {/* 3D Framed Card */}
         <div className="relative w-full aspect-[16/9.5] rounded-2xl overflow-hidden border border-border/80 bg-card/90 shadow-2xl backdrop-blur-md flex items-center justify-center p-2 sm:p-2.5">
