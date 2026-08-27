@@ -18,7 +18,7 @@ function PageContent() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden w-full max-w-[100vw]">
       <Navigation />
-      <main id="main-content" tabIndex={-1} className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 focus:outline-none overflow-x-hidden w-full">
+      <main id="main-content" tabIndex={-1} className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 focus:outline-none w-full">
         <HeroSection />
         <AboutSection />
         <ExperienceSection />

@@ -32,7 +32,7 @@ export function HeroShowcase({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex justify-center items-center w-full my-2 lg:my-0 max-w-full overflow-hidden px-2",
+        "flex justify-center items-center w-full my-2 lg:my-0 max-w-full overflow-visible",
         className,
       )}
       aria-hidden="true"
@@ -53,8 +53,8 @@ export function HeroShowcase({ className }: { className?: string }) {
             transition: isHovered ? "transform 0.1s ease-out" : "transform 0.5s ease-out",
           }}
         >
-          {/* Breathing multi-color ambient backlights */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/35 via-amber-500/25 to-primary/35 rounded-2xl blur-lg animate-hero-glow pointer-events-none" />
+          {/* Seamless borderless radial glow with natural alpha falloff */}
+          <div className="absolute -inset-4 sm:-inset-6 rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.75_0.15_180/0.3)_0%,oklch(0.75_0.18_70/0.15)_45%,transparent_70%)] blur-lg sm:blur-xl animate-hero-glow pointer-events-none" />
 
           {/* 3D Framed Card */}
           <div className="relative w-full aspect-[16/9.5] rounded-2xl overflow-hidden border border-border/80 bg-card/90 shadow-xl backdrop-blur-md flex items-center justify-center p-2 sm:p-2.5">
