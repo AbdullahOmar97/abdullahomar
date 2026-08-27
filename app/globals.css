@@ -202,14 +202,20 @@
   }
 }
 
-@keyframes pulse-glow {
+@keyframes card-ambient-glow {
   0%, 100% {
-    opacity: 0.55;
-    transform: scale(0.96);
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.4),
+      0 0 25px 2px oklch(0.75 0.15 180 / 0.35),
+      0 0 50px 8px oklch(0.75 0.18 70 / 0.22),
+      0 0 85px 16px oklch(0.75 0.15 180 / 0.12);
   }
   50% {
-    opacity: 0.95;
-    transform: scale(1.04);
+    box-shadow:
+      0 14px 30px -5px rgba(0, 0, 0, 0.45),
+      0 0 35px 4px oklch(0.75 0.15 180 / 0.5),
+      0 0 70px 14px oklch(0.75 0.18 70 / 0.32),
+      0 0 110px 22px oklch(0.75 0.15 180 / 0.18);
   }
 }
 
@@ -218,9 +224,10 @@
 }
 
 .animate-hero-glow {
-  animation: pulse-glow 4s ease-in-out infinite;
+  animation: card-ambient-glow 4s ease-in-out infinite;
 }
 
 .animate-shimmer-sweep {
   animation: shimmer-sweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
+

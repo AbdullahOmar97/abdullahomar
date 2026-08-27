@@ -53,11 +53,8 @@ export function HeroShowcase({ className }: { className?: string }) {
             transition: isHovered ? "transform 0.1s ease-out" : "transform 0.5s ease-out",
           }}
         >
-          {/* Seamless borderless radial glow with natural alpha falloff */}
-          <div className="absolute -inset-4 sm:-inset-6 rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.75_0.15_180/0.3)_0%,oklch(0.75_0.18_70/0.15)_45%,transparent_70%)] blur-lg sm:blur-xl animate-hero-glow pointer-events-none" />
-
-          {/* 3D Framed Card */}
-          <div className="relative w-full aspect-[16/9.5] rounded-2xl overflow-hidden border border-border/80 bg-card/90 shadow-xl backdrop-blur-md flex items-center justify-center p-2 sm:p-2.5">
+          {/* 3D Framed Card with Seamless Continuous Ambient Box-Shadow Glow */}
+          <div className="relative w-full aspect-[16/9.5] rounded-2xl overflow-hidden border border-border/80 bg-card/90 animate-hero-glow backdrop-blur-md flex items-center justify-center p-2 sm:p-2.5">
             <Image
               src="/hero-logo.jpg"
               alt=""
