@@ -237,10 +237,6 @@ export const translations = {
         description: "Interested in collaborating or have an AI/Full-Stack project in mind? I'd love to hear from you.",
         button: "Send Email",
       },
-      vision: {
-        title: "Professional Vision",
-        text: "Driven by engineering rigor and cutting-edge AI, my focus is on bridging traditional domain workflows with intelligent digital transformation. I engineer scalable, high-performance systems — from bilingual customs platforms and multi-tenant SaaS to real-time AI agents and computer vision pipelines — enabling organizations to automate workflows and achieve unprecedented operational efficiency.",
-      },
     },
     // Accessibility
     a11y: {
@@ -536,10 +532,6 @@ export const translations = {
         title: "لنعمل معاً",
         description: "مهتم بالتعاون أو لديك مشروع ذكاء اصطناعي أو تطوير برمجيات؟ يسعدني التواصل معك.",
         button: "أرسل بريداً إلكترونياً",
-      },
-      vision: {
-        title: "الرؤية المهنية",
-        text: "مدفوعاً بالدقة الهندسية وأحدث تقنيات الذكاء الاصطناعي، أركز على ربط سير العمل التقليدي بالتحول الرقمي الذكي. أقوم بهندسة أنظمة قابلة للتوسع وعالية الأداء — من المنصات الجمركية وأنظمة SaaS متعددة المستأجرين إلى وكلاء الذكاء الاصطناعي الفوريين ونماذج الرؤية الحاسوبية — مما يمكّن المؤسسات من أتمتة العمليات وتحقيق أعلى مستويات الكفاءة.",
       },
     },
     // Accessibility

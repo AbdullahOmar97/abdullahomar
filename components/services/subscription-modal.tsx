@@ -80,16 +80,16 @@ export function SubscriptionModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className={isRTL ? "text-right" : "text-left"}>
+          <DialogTitle>
             {t.services.modal.title}
           </DialogTitle>
-          <DialogDescription className={isRTL ? "text-right" : "text-left"}>
+          <DialogDescription>
             {t.services.modal.description}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} aria-busy={isLoading} className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="service-name" className={isRTL ? "text-right" : "text-left"}>
+            <Label htmlFor="service-name">
               {language === "ar" ? "الاسم (اختياري)" : "Name (Optional)"}
             </Label>
             <Input
@@ -98,11 +98,10 @@ export function SubscriptionModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={language === "ar" ? "اسمك الكريم" : "Your Name"}
-              className={isRTL ? "text-right" : "text-left"}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="phone" className={isRTL ? "text-right" : "text-left"}>
+            <Label htmlFor="phone">
               {t.services.modal.phoneLabel}
             </Label>
             <Input
@@ -111,14 +110,15 @@ export function SubscriptionModal({
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder={t.services.modal.phonePlaceholder}
-              className={isRTL ? "text-right" : "text-left"}
+              dir="ltr"
+              className="text-start font-mono"
               required
               aria-required="true"
               type="tel"
               autoComplete="tel"
             />
           </div>
-          <DialogFooter className={isRTL ? "sm:flex-row-reverse" : ""}>
+          <DialogFooter className="gap-2">
             <Button
               type="submit"
               disabled={isLoading}

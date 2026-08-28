@@ -76,7 +76,4 @@ VOLUNTEER INITIATIVES & COMMUNITY WORK:
   * Developed a website for middle school to support educational content access.
   * Developed a website for a school teacher to publish and organize educational resources.
   * Developed a portal for educational supervisor Mahmoud Al-Shuqairat for educational resources organization.
-
-PROFESSIONAL VISION:
-Bridging traditional engineering methodologies with modern AI, digital transformation, and scalable software architecture to deliver intelligent, high-impact solutions across enterprise platforms, customs systems, and multi-tenant ecosystems.
 `;

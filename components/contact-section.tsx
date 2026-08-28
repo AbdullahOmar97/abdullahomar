@@ -129,7 +129,7 @@ export function ContactSection() {
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
           {/* Contact Info */}
-          <ScrollReveal direction={isRTL ? "left" : "right"} delay={100} className={cn("space-y-6", isRTL && "text-right")}>
+          <ScrollReveal direction={isRTL ? "left" : "right"} delay={100} className="space-y-6">
             <h3 className="text-xl font-bold text-foreground">
               {t.contact.info.title}
             </h3>
@@ -137,10 +137,7 @@ export function ContactSection() {
               {contactData.map((item) => (
                 <SpotlightCard
                   key={item.key}
-                  className={cn(
-                    "flex items-center gap-4 p-4 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300",
-                    isRTL && "flex-row-reverse"
-                  )}
+                  className="flex items-center gap-4 p-4 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300"
                 >
                   <div
                     className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary"
@@ -148,24 +145,25 @@ export function ContactSection() {
                   >
                     <item.icon className="w-5 h-5" />
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground font-medium">
                       {getContactLabel(item.key)}
                     </p>
                     {item.href ? (
                       <a
                         href={item.href}
+                        dir="ltr"
                         aria-label={
                           item.key === "email"
                             ? t.a11y?.emailAria || "Email Abdullah Omar"
                             : t.a11y?.phoneAria || "Call Abdullah Omar"
                         }
-                        className="text-foreground hover:text-primary font-medium transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary"
+                        className="text-foreground hover:text-primary font-medium transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary inline-block font-mono text-sm sm:text-base"
                       >
                         {item.value}
                       </a>
                     ) : (
-                      <p className="text-foreground font-medium">
+                      <p className="text-foreground font-medium text-sm sm:text-base">
                         {language === "ar" ? item.valueAr : item.valueEn}
                       </p>
                     )}
@@ -178,7 +176,7 @@ export function ContactSection() {
               <h4 className="text-sm font-medium text-muted-foreground mb-4">
                 {t.contact.info.connect}
               </h4>
-              <div className={cn("flex gap-4", isRTL && "justify-end")}>
+              <div className="flex gap-4">
                 {socialLinks.map((link) => (
                   <a
                     key={link.label}
@@ -198,12 +196,7 @@ export function ContactSection() {
           {/* Interactive Direct Message Form */}
           <ScrollReveal direction={isRTL ? "right" : "left"} delay={150}>
             <SpotlightCard className="p-6 md:p-8 border border-border/80 shadow-md">
-              <h3
-                className={cn(
-                  "text-xl font-bold text-foreground mb-4",
-                  isRTL && "text-right"
-                )}
-              >
+              <h3 className="text-xl font-bold text-foreground mb-4">
                 {language === "ar" ? "أرسل رسالة مباشرة" : "Send a Direct Message"}
               </h3>
 
@@ -225,7 +218,7 @@ export function ContactSection() {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="contact-name" className={isRTL ? "text-right block text-xs" : "text-xs"}>
+                    <Label htmlFor="contact-name" className="text-xs">
                       {language === "ar" ? "الاسم" : "Name"}
                     </Label>
                     <Input
@@ -234,12 +227,11 @@ export function ContactSection() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder={language === "ar" ? "اسمك الكامل" : "Your Name"}
                       required
-                      className={isRTL ? "text-right" : ""}
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="contact-email" className={isRTL ? "text-right block text-xs" : "text-xs"}>
+                    <Label htmlFor="contact-email" className="text-xs">
                       {language === "ar" ? "البريد الإلكتروني" : "Email"}
                     </Label>
                     <Input
@@ -249,12 +241,11 @@ export function ContactSection() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
                       required
-                      className={isRTL ? "text-right" : ""}
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="contact-phone" className={isRTL ? "text-right block text-xs" : "text-xs"}>
+                    <Label htmlFor="contact-phone" className="text-xs">
                       {language === "ar" ? "رقم الهاتف (اختياري)" : "Phone (Optional)"}
                     </Label>
                     <Input
@@ -263,12 +254,13 @@ export function ContactSection() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+962 7..."
-                      className={isRTL ? "text-right" : ""}
+                      dir="ltr"
+                      className="text-start font-mono"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="contact-message" className={isRTL ? "text-right block text-xs" : "text-xs"}>
+                    <Label htmlFor="contact-message" className="text-xs">
                       {language === "ar" ? "الرسالة" : "Message"}
                     </Label>
                     <Textarea
@@ -282,12 +274,12 @@ export function ContactSection() {
                           : "Write your message or project details here..."
                       }
                       required
-                      className={isRTL ? "text-right resize-none" : "resize-none"}
+                      className="resize-none"
                     />
                   </div>
 
-                  <Button type="submit" disabled={isSubmitting} className="w-full shadow-md hover:scale-[1.01] transition-all">
-                    <Send className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+                  <Button type="submit" disabled={isSubmitting} className="w-full shadow-md hover:scale-[1.01] transition-all gap-2">
+                    <Send className="h-4 w-4 rtl:rotate-180" />
                     {isSubmitting
                       ? language === "ar"
                         ? "جاري الإرسال..."
@@ -301,24 +293,6 @@ export function ContactSection() {
             </SpotlightCard>
           </ScrollReveal>
         </div>
-
-        {/* Professional Vision */}
-        <ScrollReveal direction="up" delay={200}>
-          <SpotlightCard
-            className={cn(
-              "max-w-3xl mx-auto mt-16 p-8 border border-border/80 shadow-sm",
-              isRTL && "text-right"
-            )}
-          >
-            <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-primary" aria-hidden="true" />
-              <span>{t.contact.vision.title}</span>
-            </h3>
-            <p className="text-muted-foreground leading-relaxed text-base">
-              {t.contact.vision.text}
-            </p>
-          </SpotlightCard>
-        </ScrollReveal>
       </div>
     </section>
   )

@@ -157,26 +157,18 @@ export function ProjectsSection() {
   return (
     <section id="projects" className="py-24 scroll-mt-20">
       <div className="space-y-12">
-        <ScrollReveal direction="up" className={cn("space-y-4", isRTL && "text-right")}>
-          <h2
-            className={cn(
-              "text-3xl font-bold text-foreground flex items-center gap-3",
-              isRTL && "flex-row-reverse justify-end"
-            )}
-          >
+        <ScrollReveal direction="up" className="space-y-4">
+          <h2 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <span className="text-primary font-mono text-lg" aria-hidden="true">
               03.
             </span>
             {language === "ar" ? "المشاريع المميزة" : "Featured Projects"}
           </h2>
-          <div
-            className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")}
-            aria-hidden="true"
-          />
+          <div className="w-20 h-1 bg-primary rounded-full" aria-hidden="true" />
         </ScrollReveal>
 
         {/* Category Filters */}
-        <ScrollReveal direction="up" delay={100} className={cn("flex flex-wrap gap-2", isRTL && "justify-end")}>
+        <ScrollReveal direction="up" delay={100} className="flex flex-wrap gap-2">
           {categories.map((cat) => (
             <Button
               key={cat.id}
@@ -195,10 +187,7 @@ export function ProjectsSection() {
           {filteredProjects.map((project, idx) => (
             <ScrollReveal key={project.id} direction="up" delay={150 + idx * 80}>
               <SpotlightCard
-                className={cn(
-                  "group relative flex flex-col justify-between p-6 h-full border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300",
-                  isRTL && "text-right"
-                )}
+                className="group relative flex flex-col justify-between p-6 h-full border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -225,7 +214,7 @@ export function ProjectsSection() {
                           className="hover:text-primary hover:scale-110 transition-all p-1"
                           aria-label="Live Demo"
                         >
-                          <ExternalLink className="h-5 w-5" />
+                          <ExternalLink className="h-5 w-5 rtl:rotate-180" />
                         </a>
                       )}
                     </div>
@@ -242,7 +231,7 @@ export function ProjectsSection() {
                 </div>
 
                 <div className="pt-6 mt-4 border-t border-border/50">
-                  <div className={cn("flex flex-wrap gap-1.5", isRTL && "justify-end")}>
+                  <div className="flex flex-wrap gap-1.5">
                     {project.technologies?.map((tech) => (
                       <Badge
                         key={tech}

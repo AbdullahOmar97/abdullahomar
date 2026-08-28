@@ -76,22 +76,14 @@ export function ExperienceSection() {
   return (
     <section id="experience" className="py-24 scroll-mt-20">
       <div className="space-y-12">
-        <ScrollReveal direction="up" className={cn("space-y-4", isRTL && "text-right")}>
-          <h2
-            className={cn(
-              "text-3xl font-bold text-foreground flex items-center gap-3",
-              isRTL && "flex-row-reverse justify-end"
-            )}
-          >
+        <ScrollReveal direction="up" className="space-y-4">
+          <h2 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <span className="text-primary font-mono text-lg" aria-hidden="true">
               02.
             </span>
             {t.experience.title}
           </h2>
-          <div
-            className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")}
-            aria-hidden="true"
-          />
+          <div className="w-20 h-1 bg-primary rounded-full" aria-hidden="true" />
         </ScrollReveal>
 
         <div className="space-y-8 relative">
@@ -100,43 +92,27 @@ export function ExperienceSection() {
               key={index}
               direction={isRTL ? "right" : "left"}
               delay={index * 120}
-              className={cn(
-                "relative transition-all duration-300",
-                isRTL ? "pr-8 border-r-2 border-primary/30 hover:border-primary" : "pl-8 border-l-2 border-primary/30 hover:border-primary"
-              )}
+              className="relative transition-all duration-300 ps-8 border-s-2 border-primary/30 hover:border-primary"
             >
               {/* Glowing Pulse Node on Timeline */}
               <div
-                className={cn(
-                  "absolute top-5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-[0_0_12px_rgba(20,184,166,0.6)]",
-                  isRTL ? "-right-[11px]" : "-left-[11px]"
-                )}
+                className="absolute top-5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-[0_0_12px_rgba(20,184,166,0.6)] -start-[11px]"
                 aria-hidden="true"
               >
                 <span className="w-2 h-2 rounded-full bg-background animate-ping opacity-75" />
               </div>
 
               <SpotlightCard className="p-6 md:p-8 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300">
-                <div className={cn("space-y-4", isRTL && "text-right")}>
-                  <div
-                    className={cn(
-                      "flex flex-col md:flex-row md:justify-between gap-2 md:items-center",
-                      isRTL && "md:flex-row-reverse"
-                    )}
-                  >
+                <div className="space-y-4">
+                  <div className="flex flex-col md:flex-row md:justify-between gap-2 md:items-center">
                     <div>
                       <h3 className="text-xl font-bold text-foreground hover:text-primary transition-colors">
                         {exp.title}
                       </h3>
-                      <p
-                        className={cn(
-                          "text-primary font-medium flex items-center gap-2 mt-1",
-                          isRTL && "flex-row-reverse justify-end"
-                        )}
-                      >
+                      <p className="text-primary font-medium flex items-center gap-2 mt-1">
                         <Briefcase size={16} className="shrink-0" />
                         <span>{exp.company}</span>
-                        <ExternalLink size={14} aria-hidden="true" className="opacity-70" />
+                        <ExternalLink size={14} aria-hidden="true" className="opacity-70 rtl:rotate-180" />
                       </p>
                     </div>
                     <div className="text-xs md:text-sm text-primary font-mono px-3 py-1 rounded-full bg-primary/10 border border-primary/20 self-start md:self-auto">
@@ -148,12 +124,9 @@ export function ExperienceSection() {
                     {exp.description?.map((item, i) => (
                       <li
                         key={i}
-                        className={cn(
-                          "text-muted-foreground flex items-start gap-2.5 text-sm md:text-base leading-relaxed",
-                          isRTL && "flex-row-reverse"
-                        )}
+                        className="text-muted-foreground flex items-start gap-2.5 text-sm md:text-base leading-relaxed"
                       >
-                        <span className="text-primary mt-1 font-bold select-none shrink-0" aria-hidden="true">
+                        <span className="text-primary mt-1 font-bold select-none shrink-0 rtl:rotate-180 inline-block" aria-hidden="true">
                           ▹
                         </span>
                         <span>{item}</span>
@@ -161,7 +134,7 @@ export function ExperienceSection() {
                     ))}
                   </ul>
 
-                  <div className={cn("flex flex-wrap gap-2 pt-4 border-t border-border/50", isRTL && "justify-end")}>
+                  <div className="flex flex-wrap gap-2 pt-4 border-t border-border/50">
                     {(exp.skills || defaultExperienceSkills[index] || []).map((skill) => (
                       <Badge
                         key={skill}

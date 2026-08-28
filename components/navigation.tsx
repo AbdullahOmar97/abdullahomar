@@ -177,7 +177,7 @@ export function Navigation() {
               aria-label="Mobile Navigation"
               className="md:hidden mt-4 pb-4 pt-4 px-4 w-full bg-background/95 backdrop-blur-xl border border-border rounded-2xl shadow-xl animate-in fade-in slide-in-from-top-2 duration-200"
             >
-              <ul className={cn("flex flex-col gap-1.5", isRTL && "items-end")}>
+              <ul className="flex flex-col gap-1.5 w-full">
                 {navItems.map((item) => {
                   const isActive =
                     item.href === "/services"

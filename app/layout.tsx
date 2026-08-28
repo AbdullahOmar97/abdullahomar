@@ -1,11 +1,12 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Inter, Geist_Mono } from "next/font/google"
+import { Inter, Geist_Mono, Cairo } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
-const _inter = Inter({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo" })
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -51,7 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans antialiased`}>
+      <body className={`${inter.variable} ${cairo.variable} ${geistMono.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>

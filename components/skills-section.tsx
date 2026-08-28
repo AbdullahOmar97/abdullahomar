@@ -157,38 +157,27 @@ export function SkillsSection() {
   return (
     <section id="skills" className="py-24 scroll-mt-20">
       <div className="space-y-12">
-        <ScrollReveal direction="up" className={cn("space-y-4", isRTL && "text-right")}>
-          <h2
-            className={cn(
-              "text-3xl font-bold text-foreground flex items-center gap-3",
-              isRTL && "flex-row-reverse justify-end"
-            )}
-          >
+        <ScrollReveal direction="up" className="space-y-4">
+          <h2 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <span className="text-primary font-mono text-lg" aria-hidden="true">
               04.
             </span>
             {t.skills.title}
           </h2>
-          <div
-            className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")}
-            aria-hidden="true"
-          />
+          <div className="w-20 h-1 bg-primary rounded-full" aria-hidden="true" />
         </ScrollReveal>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categoriesToRender.map((category, idx) => (
             <ScrollReveal key={category.key} direction="up" delay={100 + idx * 75}>
               <SpotlightCard
-                className={cn(
-                  "p-6 h-full border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300",
-                  isRTL && "text-right"
-                )}
+                className="p-6 h-full border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300"
               >
                 <h3 className="font-bold text-foreground mb-4 text-lg flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-primary" aria-hidden="true" />
                   <span>{getCategoryTitle(category.key)}</span>
                 </h3>
-                <div className={cn("flex flex-wrap gap-2", isRTL && "justify-end")}>
+                <div className="flex flex-wrap gap-2">
                   {category.skills.map((skill) => (
                     <Badge
                       key={skill}

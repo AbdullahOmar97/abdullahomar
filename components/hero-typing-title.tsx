@@ -81,7 +81,7 @@ export function HeroTypingTitle({ className }: { className?: string }) {
         {displayText}
       </span>
       <span
-        className="inline-block w-0.5 h-5 bg-primary animate-pulse ml-0.5"
+        className="inline-block w-0.5 h-5 bg-primary animate-pulse ms-0.5"
         aria-hidden="true"
       />
     </div>

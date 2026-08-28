@@ -29,13 +29,10 @@ export function HeroSection() {
         <ScrollReveal
           direction={isRTL ? "right" : "left"}
           delay={50}
-          className={cn(
-            "space-y-6 order-2",
-            isRTL ? "text-right lg:order-2" : "text-left lg:order-1",
-          )}
+          className="space-y-6 order-2 lg:order-1"
         >
           {/* Live Status Badge with Animated Radar Ping */}
-          <div className={cn("flex items-center", isRTL ? "justify-end" : "justify-start")}>
+          <div className="flex items-center">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shadow-sm backdrop-blur-sm">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -60,37 +57,29 @@ export function HeroSection() {
               {t.hero.title}
             </p>
             {/* Dynamic Typewriter Title */}
-            <HeroTypingTitle className={isRTL ? "justify-end" : "justify-start"} />
+            <HeroTypingTitle />
           </div>
 
           <p className="text-muted-foreground leading-relaxed max-w-lg text-base">
             {t.hero.description}
           </p>
 
-          <div
-            className={cn(
-              "flex flex-wrap gap-4 text-sm text-muted-foreground",
-              isRTL && "flex-row-reverse justify-end",
-            )}
-          >
-            <span className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <span className="flex items-center gap-2">
               <MapPin size={16} className="text-primary shrink-0" aria-hidden="true" />
-              {t.hero.location}
+              <span>{t.hero.location}</span>
             </span>
             <a
               href="mailto:AbdullahOmar@outlook.com"
               aria-label={t.a11y?.emailAria || "Send an email to Abdullah Omar at AbdullahOmar@outlook.com"}
-              className={cn(
-                "flex items-center gap-2 hover:text-primary transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary",
-                isRTL && "flex-row-reverse",
-              )}
+              className="flex items-center gap-2 hover:text-primary transition-colors focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary font-mono"
             >
               <Mail size={16} className="text-primary shrink-0" aria-hidden="true" />
-              AbdullahOmar@outlook.com
+              <span dir="ltr">AbdullahOmar@outlook.com</span>
             </a>
           </div>
 
-          <div className={cn("flex flex-wrap items-center gap-3 pt-4", isRTL && "flex-row-reverse justify-end")}>
+          <div className="flex flex-wrap items-center gap-3 pt-4">
             <Button
               asChild
               className="w-full sm:w-auto shadow-md hover:shadow-primary/25 hover:scale-[1.02] transition-all duration-300 group"
@@ -120,7 +109,7 @@ export function HeroSection() {
             </Button>
           </div>
 
-          <div className={cn("flex items-center gap-4 pt-4", isRTL && "flex-row-reverse justify-end")}>
+          <div className="flex items-center gap-4 pt-4">
             <a
               href="https://linkedin.com/in/AbdullahOmar97"
               target="_blank"

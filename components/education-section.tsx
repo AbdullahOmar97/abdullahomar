@@ -52,22 +52,14 @@ export function EducationSection() {
   return (
     <section id="education" className="py-24 scroll-mt-20">
       <div className="space-y-12">
-        <ScrollReveal direction="up" className={cn("space-y-4", isRTL && "text-right")}>
-          <h2
-            className={cn(
-              "text-3xl font-bold text-foreground flex items-center gap-3",
-              isRTL && "flex-row-reverse justify-end"
-            )}
-          >
+        <ScrollReveal direction="up" className="space-y-4">
+          <h2 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <span className="text-primary font-mono text-lg" aria-hidden="true">
               05.
             </span>
             {t.education.title}
           </h2>
-          <div
-            className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")}
-            aria-hidden="true"
-          />
+          <div className="w-20 h-1 bg-primary rounded-full" aria-hidden="true" />
         </ScrollReveal>
 
         <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -78,10 +70,7 @@ export function EducationSection() {
               <ScrollReveal
                 direction="up"
                 delay={50}
-                className={cn(
-                  "text-xl font-semibold text-foreground flex items-center gap-2",
-                  isRTL && "flex-row-reverse justify-end"
-                )}
+                className="text-xl font-semibold text-foreground flex items-center gap-2"
               >
                 <GraduationCap className="text-primary" aria-hidden="true" />
                 <span>{t.education.educationLabel}</span>
@@ -91,10 +80,7 @@ export function EducationSection() {
                 {degreesList.map((edu, index) => (
                   <ScrollReveal key={index} direction="up" delay={100 + index * 75}>
                     <SpotlightCard
-                      className={cn(
-                        "p-6 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300",
-                        isRTL && "text-right"
-                      )}
+                      className="p-6 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300"
                     >
                       <h3 className="font-bold text-foreground text-lg">{edu.degree}</h3>
                       {edu.field && <p className="text-primary font-medium text-sm mt-0.5">{edu.field}</p>}
@@ -114,10 +100,7 @@ export function EducationSection() {
               <ScrollReveal
                 direction="up"
                 delay={80}
-                className={cn(
-                  "text-xl font-semibold text-foreground flex items-center gap-2",
-                  isRTL && "flex-row-reverse justify-end"
-                )}
+                className="text-xl font-semibold text-foreground flex items-center gap-2"
               >
                 <HeartHandshake className="text-primary" aria-hidden="true" />
                 <span>{t.education.volunteerLabel}</span>
@@ -127,12 +110,9 @@ export function EducationSection() {
                 {t.education.volunteer?.map((vol, index) => (
                   <ScrollReveal key={index} direction="up" delay={120 + index * 75}>
                     <SpotlightCard
-                      className={cn(
-                        "p-5 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300",
-                        isRTL && "text-right"
-                      )}
+                      className="p-5 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300"
                     >
-                      <div className={cn("flex flex-wrap items-center justify-between gap-2", isRTL && "flex-row-reverse")}>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <h3 className="font-bold text-foreground text-base">{vol.title}</h3>
                         <span className="text-xs text-primary font-mono px-2 py-0.5 rounded bg-primary/10">
                           {vol.period}
@@ -152,10 +132,7 @@ export function EducationSection() {
             <ScrollReveal
               direction="up"
               delay={50}
-              className={cn(
-                "text-xl font-semibold text-foreground flex items-center gap-2",
-                isRTL && "flex-row-reverse justify-end"
-              )}
+              className="text-xl font-semibold text-foreground flex items-center gap-2"
             >
               <Award className="text-primary" aria-hidden="true" />
               <span>{t.education.certificationsLabel}</span>
@@ -165,18 +142,12 @@ export function EducationSection() {
               {t.education.certifications.map((cert, index) => (
                 <ScrollReveal key={index} direction="up" delay={100 + index * 60}>
                   <SpotlightCard
-                    className={cn(
-                      "p-5 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300",
-                      isRTL && "text-right"
-                    )}
+                    className="p-5 border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300"
                   >
                     <h3 className="font-semibold text-foreground text-base">{cert.title}</h3>
                     <p className="text-sm text-muted-foreground mt-1">{cert.institution}</p>
                     <div
-                      className={cn(
-                        "flex flex-wrap items-center gap-2 mt-3 text-xs text-muted-foreground font-mono",
-                        isRTL && "flex-row-reverse justify-end"
-                      )}
+                      className="flex flex-wrap items-center gap-2 mt-3 text-xs text-muted-foreground font-mono"
                     >
                       <span className="px-2.5 py-0.5 rounded-md bg-muted text-foreground/80 font-medium">
                         {cert.date}
