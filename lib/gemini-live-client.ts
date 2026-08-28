@@ -1,6 +1,6 @@
 /**
  * Gemini Live API Web Audio & WebSocket Client
- * Real-time bidirectional voice and text streaming with Gemini 2.0 Live.
+ * Real-time bidirectional voice and text streaming with Gemini Live Multimodal API.
  */
 
 export interface LiveClientConfig {
@@ -14,13 +14,39 @@ export interface LiveClientConfig {
   onInterrupted?: () => void;
 }
 
+/**
+ * Resamples any audio buffer to 16kHz PCM
+ */
+function downsampleTo16k(inputData: Float32Array, inputSampleRate: number): Float32Array {
+  if (inputSampleRate === 16000) return inputData;
+  const ratio = inputSampleRate / 16000;
+  const outputLength = Math.round(inputData.length / ratio);
+  const result = new Float32Array(outputLength);
+  let offsetResult = 0;
+  let offsetInput = 0;
+
+  while (offsetResult < result.length) {
+    const nextOffsetInput = Math.round((offsetResult + 1) * ratio);
+    let accum = 0;
+    let count = 0;
+    for (let i = offsetInput; i < nextOffsetInput && i < inputData.length; i++) {
+      accum += inputData[i];
+      count++;
+    }
+    result[offsetResult] = count > 0 ? accum / count : inputData[offsetInput] || 0;
+    offsetResult++;
+    offsetInput = nextOffsetInput;
+  }
+  return result;
+}
+
 export class GeminiLiveClient {
   private ws: WebSocket | null = null;
   private audioContext: AudioContext | null = null;
-  private inputAudioContext: AudioContext | null = null;
   private mediaStream: MediaStream | null = null;
   private inputSourceNode: MediaStreamAudioSourceNode | null = null;
   private scriptProcessor: ScriptProcessorNode | null = null;
+  private silentGainNode: GainNode | null = null;
   
   public inputAnalyser: AnalyserNode | null = null;
   public outputAnalyser: AnalyserNode | null = null;
@@ -40,55 +66,55 @@ export class GeminiLiveClient {
 
   /**
    * Initialize audio contexts synchronously during user gesture.
-   * Must be called BEFORE any async work (fetch, etc.) to satisfy
-   * browser autoplay policy — async calls break the gesture chain.
+   * Creates audio graph and resumes context to satisfy browser autoplay policies.
    */
   public async initAudioContexts(): Promise<void> {
-    if (this.audioContext) return;
+    if (this.audioContext && this.audioContext.state !== "closed") {
+      if (this.audioContext.state === "suspended") {
+        await this.audioContext.resume();
+      }
+      return;
+    }
 
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    // Create standard AudioContext at device hardware rate (universal compatibility)
+    this.audioContext = new AudioCtx();
 
-    // Output context for playback at 24kHz
-    this.audioContext = new AudioCtx({ sampleRate: 24000 });
+    if (this.audioContext.state === "suspended") {
+      await this.audioContext.resume();
+    }
+
+    // Output Analyser for Visualizer & Playback
     this.outputAnalyser = this.audioContext.createAnalyser();
     this.outputAnalyser.fftSize = 64;
     this.outputAnalyser.smoothingTimeConstant = 0.8;
     this.outputAnalyser.connect(this.audioContext.destination);
 
-    // Force resume immediately within user gesture
-    if (this.audioContext.state === "suspended") {
-      await this.audioContext.resume();
-    }
-
-    // Request microphone
+    // Request microphone access
     this.mediaStream = await navigator.mediaDevices.getUserMedia({
       audio: {
         channelCount: 1,
-        sampleRate: 16000,
         echoCancellation: true,
         noiseSuppression: true,
         autoGainControl: true,
       },
     });
 
-    // Input context for capture at 16kHz
-    this.inputAudioContext = new AudioCtx({ sampleRate: 16000 });
-    this.inputAnalyser = this.inputAudioContext.createAnalyser();
+    // Input Source & Analyser for User Visualizer
+    this.inputAnalyser = this.audioContext.createAnalyser();
     this.inputAnalyser.fftSize = 64;
     this.inputAnalyser.smoothingTimeConstant = 0.8;
 
-    this.inputSourceNode = this.inputAudioContext.createMediaStreamSource(this.mediaStream);
+    this.inputSourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
     this.inputSourceNode.connect(this.inputAnalyser);
   }
 
   /**
    * Connect to Gemini Live API using an ephemeral token.
-   * Call initAudioContexts() first during user gesture.
    */
   public async connect(token: string): Promise<void> {
     if (this.isConnected) return;
 
-    // Ensure audio contexts exist (fallback if not pre-initialized)
     if (!this.audioContext) {
       await this.initAudioContexts();
     }
@@ -103,8 +129,6 @@ export class GeminiLiveClient {
 
       this.ws.onopen = () => {
         this.isConnected = true;
-        // Setup frame is required as the first message — even with constrained tokens.
-        // It must match the liveConnectConstraints locked in the ephemeral token.
         try {
           const setupMessage = {
             setup: {
@@ -126,7 +150,6 @@ export class GeminiLiveClient {
           console.error("Live setup message failed:", setupErr);
           this.config.onError?.("Failed to send setup message");
         }
-        // Mic capture starts after server sends setupComplete.
         this.config.onConnect?.();
       };
 
@@ -157,37 +180,49 @@ export class GeminiLiveClient {
    * Start processing microphone buffer to 16kHz PCM chunks
    */
   private startMicrophoneCapture() {
-    if (!this.inputAudioContext || !this.inputSourceNode) return;
+    if (!this.audioContext || !this.inputSourceNode) return;
 
-    // Use ScriptProcessor for real-time PCM extraction
-    const bufferSize = 2048;
-    this.scriptProcessor = this.inputAudioContext.createScriptProcessor(bufferSize, 1, 1);
+    if (this.audioContext.state === "suspended") {
+      this.audioContext.resume().catch((e) => console.warn("AudioContext resume note:", e));
+    }
+
+    const bufferSize = 4096;
+    this.scriptProcessor = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
+
+    // Silent gain prevents mic input feedback through speaker output while keeping processor active
+    this.silentGainNode = this.audioContext.createGain();
+    this.silentGainNode.gain.value = 0;
+
+    const currentSampleRate = this.audioContext.sampleRate;
 
     this.scriptProcessor.onaudioprocess = (e) => {
       if (!this.isConnected || !this.isSessionReady || this.isMuted || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
         return;
       }
 
-      const inputData = e.inputBuffer.getChannelData(0);
+      const rawInput = e.inputBuffer.getChannelData(0);
       
       // Calculate audio power for speaking indicator
       let sum = 0;
-      for (let i = 0; i < inputData.length; i++) {
-        sum += inputData[i] * inputData[i];
+      for (let i = 0; i < rawInput.length; i++) {
+        sum += rawInput[i] * rawInput[i];
       }
-      const rms = Math.sqrt(sum / inputData.length);
+      const rms = Math.sqrt(sum / rawInput.length);
       const isVoiceActive = rms > 0.02;
       this.config.onUserSpeaking?.(isVoiceActive);
 
-      // Convert Float32Array to 16-bit Linear PCM
-      const pcm16 = new Int16Array(inputData.length);
-      for (let i = 0; i < inputData.length; i++) {
-        const s = Math.max(-1, Math.min(1, inputData[i]));
+      // Downsample to exactly 16000Hz PCM required by Gemini API
+      const downsampled = downsampleTo16k(rawInput, currentSampleRate);
+
+      // Convert Float32Array to 16-bit Linear PCM (Little Endian)
+      const pcm16 = new Int16Array(downsampled.length);
+      for (let i = 0; i < downsampled.length; i++) {
+        const s = Math.max(-1, Math.min(1, downsampled[i]));
         pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
       }
 
       // Convert buffer to Base64
-      const bytes = new Uint8Array(pcm16.buffer);
+      const bytes = new Uint8Array(pcm16.buffer, pcm16.byteOffset, pcm16.byteLength);
       let binary = "";
       for (let i = 0; i < bytes.byteLength; i++) {
         binary += String.fromCharCode(bytes[i]);
@@ -210,7 +245,8 @@ export class GeminiLiveClient {
     };
 
     this.inputSourceNode.connect(this.scriptProcessor);
-    this.scriptProcessor.connect(this.inputAudioContext.destination);
+    this.scriptProcessor.connect(this.silentGainNode);
+    this.silentGainNode.connect(this.audioContext.destination);
   }
 
   /**
@@ -223,6 +259,8 @@ export class GeminiLiveClient {
         dataText = rawData;
       } else if (rawData instanceof Blob) {
         dataText = await rawData.text();
+      } else if (rawData instanceof ArrayBuffer) {
+        dataText = new TextDecoder().decode(rawData);
       }
 
       if (!dataText) return;
@@ -248,23 +286,30 @@ export class GeminiLiveClient {
         return;
       }
 
-      // 2. Handle Model Turn (Audio + Text parts)
+      // 2. Handle Text Transcription from outputTranscription or modelTurn
+      if (response.serverContent?.outputTranscription?.text) {
+        const text = response.serverContent.outputTranscription.text;
+        this.currentModelTranscript += text;
+        this.config.onAISpeaking?.(true, text);
+        this.config.onTranscription?.(this.currentModelTranscript, false, "model");
+      }
+
+      // 3. Handle Model Turn (Audio + Text parts)
       const parts = response.serverContent?.modelTurn?.parts || [];
       for (const part of parts) {
-        // Handle incoming text transcription chunks
         if (part.text) {
           this.currentModelTranscript += part.text;
           this.config.onAISpeaking?.(true, part.text);
           this.config.onTranscription?.(this.currentModelTranscript, false, "model");
         }
 
-        // Handle incoming audio chunks (native audio models may vary mimeType)
+        // Handle incoming audio chunks (24kHz PCM)
         if (part.inlineData?.data) {
           await this.playPcm24Chunk(part.inlineData.data);
         }
       }
 
-      // 3. Handle Turn Complete
+      // 4. Handle Turn Complete
       if (response.serverContent?.turnComplete) {
         if (this.currentModelTranscript) {
           this.config.onTranscription?.(this.currentModelTranscript, true, "model");
@@ -284,25 +329,30 @@ export class GeminiLiveClient {
     if (!this.audioContext || !this.outputAnalyser) return;
 
     try {
-      // Ensure AudioContext is running (browsers suspend without user gesture)
       if (this.audioContext.state === "suspended") {
         await this.audioContext.resume();
       }
 
       const binaryString = atob(base64Data);
       const len = binaryString.length;
+      const sampleCount = Math.floor(len / 2);
+      if (sampleCount === 0) return;
+
       const bytes = new Uint8Array(len);
       for (let i = 0; i < len; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
 
-      const pcm16 = new Int16Array(bytes.buffer);
-      const float32 = new Float32Array(pcm16.length);
-      for (let i = 0; i < pcm16.length; i++) {
-        float32[i] = pcm16[i] / 32768.0;
+      // Decode 16-bit little-endian PCM to Float32 [-1.0, 1.0]
+      const float32 = new Float32Array(sampleCount);
+      const dataView = new DataView(bytes.buffer, bytes.byteOffset, len);
+      for (let i = 0; i < sampleCount; i++) {
+        const int16 = dataView.getInt16(i * 2, true);
+        float32[i] = int16 < 0 ? int16 / 32768.0 : int16 / 32767.0;
       }
 
-      const audioBuffer = this.audioContext.createBuffer(1, float32.length, 24000);
+      // Web Audio API automatically resamples 24kHz buffer to destination hardware rate seamlessly
+      const audioBuffer = this.audioContext.createBuffer(1, sampleCount, 24000);
       audioBuffer.getChannelData(0).set(float32);
 
       const source = this.audioContext.createBufferSource();
@@ -395,6 +445,13 @@ export class GeminiLiveClient {
       this.scriptProcessor = null;
     }
 
+    if (this.silentGainNode) {
+      try {
+        this.silentGainNode.disconnect();
+      } catch (_) {}
+      this.silentGainNode = null;
+    }
+
     if (this.inputSourceNode) {
       try {
         this.inputSourceNode.disconnect();
@@ -407,14 +464,7 @@ export class GeminiLiveClient {
       this.mediaStream = null;
     }
 
-    if (this.inputAudioContext) {
-      try {
-        this.inputAudioContext.close();
-      } catch (_) {}
-      this.inputAudioContext = null;
-    }
-
-    if (this.audioContext) {
+    if (this.audioContext && this.audioContext.state !== "closed") {
       try {
         this.audioContext.close();
       } catch (_) {}
