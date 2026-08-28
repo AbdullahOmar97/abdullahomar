@@ -579,7 +579,7 @@ export function AIChatbot() {
                   }`}
                 >
                   <div
-                    className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed max-w-[88%] break-words transition-all ${
+                    className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed max-w-[88%] break-words whitespace-pre-wrap transition-all ${
                       msg.role === "user"
                         ? `bg-primary text-primary-foreground ${isRTL ? "rounded-tl-sm" : "rounded-tr-sm"}`
                         : `bg-muted/70 text-foreground border border-border/40 ${isRTL ? "rounded-tr-sm" : "rounded-tl-sm"} shadow-xs`
