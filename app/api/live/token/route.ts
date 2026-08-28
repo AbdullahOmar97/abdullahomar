@@ -20,7 +20,7 @@ async function handleLiveToken(req: Request) {
 
     const ai = new GoogleGenAI({
       apiKey,
-      httpOptions: { apiVersion: "v1alpha" },
+      httpOptions: { apiVersion: "v1beta" },
     });
 
     const expireTime = new Date(Date.now() + 30 * 60 * 1000).toISOString();

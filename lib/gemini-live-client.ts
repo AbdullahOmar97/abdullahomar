@@ -120,8 +120,8 @@ export class GeminiLiveClient {
     }
 
     try {
-      // Connect WebSocket to Gemini Live API
-      const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained?access_token=${encodeURIComponent(
+      // Connect WebSocket to Gemini Live API (v1beta endpoint for ephemeral tokens)
+      const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained?access_token=${encodeURIComponent(
         token
       )}`;
 
@@ -229,15 +229,13 @@ export class GeminiLiveClient {
       }
       const base64Audio = btoa(binary);
 
-      // Send realtime PCM chunk to Gemini
+      // Send realtime PCM audio chunk to Gemini (official format)
       const message = {
         realtimeInput: {
-          mediaChunks: [
-            {
-              mimeType: "audio/pcm;rate=16000",
-              data: base64Audio,
-            },
-          ],
+          audio: {
+            data: base64Audio,
+            mimeType: "audio/pcm;rate=16000",
+          },
         },
       };
 
@@ -286,7 +284,13 @@ export class GeminiLiveClient {
         return;
       }
 
-      // 2. Handle Text Transcription from outputTranscription or modelTurn
+      // 2. Handle User Speech Transcription (from inputTranscription)
+      if (response.serverContent?.inputTranscription?.text) {
+        const userText = response.serverContent.inputTranscription.text;
+        this.config.onTranscription?.(userText, true, "user");
+      }
+
+      // 3. Handle Model Speech Transcription (from outputTranscription)
       if (response.serverContent?.outputTranscription?.text) {
         const text = response.serverContent.outputTranscription.text;
         this.currentModelTranscript += text;
@@ -399,15 +403,10 @@ export class GeminiLiveClient {
   public sendTextMessage(text: string) {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
 
+    // Send realtime text message to Gemini (official format)
     const message = {
-      clientContent: {
-        turns: [
-          {
-            role: "user",
-            parts: [{ text }],
-          },
-        ],
-        turnComplete: true,
+      realtimeInput: {
+        text,
       },
     };
 
