@@ -18,12 +18,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem("language") as Language
     if (saved && (saved === "en" || saved === "ar")) {
       setLanguage(saved)
+      document.documentElement.lang = saved
+      document.documentElement.dir = saved === "ar" ? "rtl" : "ltr"
+    } else {
+      document.documentElement.lang = "en"
+      document.documentElement.dir = "ltr"
     }
   }, [])
 
   useEffect(() => {
     localStorage.setItem("language", language)
-    // Update HTML attributes for RTL support
     document.documentElement.lang = language
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr"
   }, [language])

@@ -33,7 +33,7 @@ type ChatMode = "chat" | "live"
 type LiveStatus = "idle" | "connecting" | "connected" | "speaking" | "listening" | "error"
 
 export function AIChatbot() {
-  const { language } = useLanguage()
+  const { language, isRTL } = useLanguage()
   const trans = getTranslation(language)
   const t = trans.chat
   const chatA11y = trans.a11y?.chatAria
@@ -318,7 +318,12 @@ export function AIChatbot() {
   return (
     <>
       {/* Floating Trigger Buttons */}
-      <div className="fixed bottom-6 end-6 z-50 flex items-center gap-2.5 isolate">
+      <div
+        className={`fixed z-50 flex items-center gap-2.5 isolate bottom-6 end-6 transition-all duration-300 ${
+          isOpen ? "scale-0 opacity-0 pointer-events-none invisible" : "scale-100 opacity-100 pointer-events-auto visible"
+        }`}
+        dir={isRTL ? "rtl" : "ltr"}
+      >
         {/* Direct Live Voice Trigger */}
         <Button
           onClick={() => {
@@ -360,10 +365,15 @@ export function AIChatbot() {
         role="dialog"
         aria-modal="false"
         aria-label={t.title}
-        className={`fixed bottom-6 end-6 z-50 w-[420px] max-w-[calc(100vw-32px)] h-[620px] max-h-[min(620px,calc(100dvh-5rem))] flex flex-col rounded-3xl bg-background/95 backdrop-blur-xl border border-border shadow-2xl transition-all duration-300 origin-bottom-right rtl:origin-bottom-left overflow-hidden isolate ${
-          isOpen ? "scale-100 opacity-100 pointer-events-auto visible" : "scale-0 opacity-0 pointer-events-none invisible"
-        }`}
-        dir={language === "ar" ? "rtl" : "ltr"}
+        style={{
+          transformOrigin: isRTL ? "bottom left" : "bottom right",
+        }}
+        className={`fixed z-50 flex flex-col rounded-3xl bg-background/95 backdrop-blur-xl border border-border shadow-2xl transition-all duration-300 overflow-hidden isolate
+          max-sm:inset-x-4 max-sm:bottom-4 max-sm:w-auto max-sm:max-h-[min(620px,calc(100dvh-4.5rem))]
+          sm:bottom-6 sm:end-6 sm:w-[420px] sm:max-w-[calc(100vw-32px)] sm:h-[620px] sm:max-h-[min(620px,calc(100dvh-5rem))]
+          ${isOpen ? "scale-100 opacity-100 pointer-events-auto visible" : "scale-0 opacity-0 pointer-events-none invisible"}
+        `}
+        dir={isRTL ? "rtl" : "ltr"}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border/80 bg-muted/40">
@@ -568,8 +578,8 @@ export function AIChatbot() {
                   <div
                     className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed max-w-[88%] break-words transition-all ${
                       msg.role === "user"
-                        ? "bg-primary text-primary-foreground rounded-tr-sm"
-                        : "bg-muted/70 text-foreground border border-border/40 rounded-tl-sm shadow-xs"
+                        ? `bg-primary text-primary-foreground ${isRTL ? "rounded-tl-sm" : "rounded-tr-sm"}`
+                        : `bg-muted/70 text-foreground border border-border/40 ${isRTL ? "rounded-tr-sm" : "rounded-tl-sm"} shadow-xs`
                     }`}
                   >
                     {msg.content || (
@@ -621,7 +631,7 @@ export function AIChatbot() {
                         key={idx}
                         type="button"
                         onClick={() => handleSendMessage(s)}
-                        className="text-left rtl:text-right px-3 py-2 text-xs rounded-xl bg-muted/40 hover:bg-muted border border-border/40 text-foreground/80 hover:text-foreground transition-colors"
+                        className="text-start px-3 py-2 text-xs rounded-xl bg-muted/40 hover:bg-muted border border-border/40 text-foreground/80 hover:text-foreground transition-colors w-full"
                       >
                         {s}
                       </button>
@@ -647,7 +657,7 @@ export function AIChatbot() {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={t.placeholder}
                 aria-label={chatA11y?.inputLabel || t.placeholder}
-                className="flex-1 h-10 bg-muted/70 rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 border border-border/40 transition-all placeholder:text-muted-foreground/70"
+                className="flex-1 min-w-0 h-10 bg-muted/70 rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 border border-border/40 transition-all placeholder:text-muted-foreground/70 text-start"
               />
 
               {/* Switch to Live Voice button in place of the old mic STT button */}
