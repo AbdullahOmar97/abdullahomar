@@ -110,14 +110,17 @@ export class GeminiLiveClient {
         await this.handleIncomingMessage(event.data);
       };
 
-      this.ws.onerror = (e) => {
+      this.ws.onerror = (e: any) => {
         console.error("Gemini Live WebSocket error:", e);
-        this.config.onError?.("WebSocket connection encountered an error");
+        const errMsg = e?.message || "WebSocket connection failed to connect to Gemini Live";
+        this.config.onError?.(errMsg);
       };
 
       this.ws.onclose = (event) => {
+        console.warn("Gemini Live WebSocket closed. Code:", event.code, "Reason:", event.reason, "Clean:", event.wasClean);
         this.cleanup();
-        this.config.onDisconnect?.(event.reason || "Connection closed");
+        const reason = event.reason || (event.code === 1006 ? "Connection terminated abnormally (1006)" : `Connection closed (${event.code})`);
+        this.config.onDisconnect?.(reason);
       };
     } catch (err: any) {
       this.cleanup();
@@ -200,6 +203,16 @@ export class GeminiLiveClient {
 
       if (!dataText) return;
       const response = JSON.parse(dataText);
+
+      // Handle server setup acknowledgement or errors
+      if (response.setupComplete) {
+        console.log("Gemini Live Session Setup Complete:", response.setupComplete);
+      }
+
+      if (response.error) {
+        console.error("Gemini Live Server Error:", response.error);
+        this.config.onError?.(response.error.message || "Gemini Live API error");
+      }
 
       // 1. Handle Interruption (User started speaking while model was replying)
       if (response.serverContent?.interrupted) {
