@@ -26,7 +26,7 @@ export async function POST(req: Request) {
         expireTime,
         newSessionExpireTime,
         liveConnectConstraints: {
-          model: "gemini-2.5-flash",
+          model: "gemini-3.6-flash",
           config: {
             responseModalities: [Modality.AUDIO],
             speechConfig: {
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       token: tokenResponse.name,
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       expireTime,
     });
   } catch (error: any) {
