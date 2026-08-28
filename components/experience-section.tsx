@@ -25,9 +25,20 @@ interface DBExperience {
   highlightsAr: string[]
 }
 
-const experienceSkills = [
-  ["Python", "Next.js", "Django", "LangGraph", "Computer Vision", "n8n", "ComfyUI"],
-  ["Next.js", "Django", "PostgreSQL", "REST APIs", "TailwindCSS"],
+interface JobItem {
+  title: string
+  company: string
+  location?: string | null
+  period: string
+  description: string[]
+  skills?: string[]
+}
+
+const defaultExperienceSkills: string[][] = [
+  ["React", "FastAPI", "Next.js", "Django", "PostgreSQL", "LangGraph", "Computer Vision", "OCR", "Docker", "n8n"],
+  ["Python", "Computer Vision", "YOLO", "FastAPI", "Video Processing", "AI Damage Classification"],
+  ["Next.js", "TypeScript", "Django", "django-tenants", "PostgreSQL", "Scikit-learn", "Docker", "MinIO"],
+  ["Next.js", "React", "Django REST Framework", "PostgreSQL", "TailwindCSS"],
 ]
 
 export function ExperienceSection() {
@@ -47,19 +58,20 @@ export function ExperienceSection() {
   }, [])
 
   // Map either DB experiences or static translations
-  const experiencesList =
+  const experiencesList: JobItem[] =
     dbExperiences.length > 0
-      ? dbExperiences.map((exp) => ({
+      ? dbExperiences.map((exp, idx) => ({
           title: language === "ar" ? exp.roleAr : exp.roleEn,
           company: language === "ar" ? exp.companyAr : exp.companyEn,
           location: language === "ar" ? exp.locationAr : exp.locationEn,
           period: language === "ar" ? exp.periodAr : exp.periodEn,
+          skills: defaultExperienceSkills[idx] || [],
           description:
             (language === "ar" ? exp.highlightsAr : exp.highlightsEn)?.length > 0
               ? (language === "ar" ? exp.highlightsAr : exp.highlightsEn)
               : [language === "ar" ? exp.descriptionAr : exp.descriptionEn].filter(Boolean) as string[],
         }))
-      : t.experience.jobs
+      : (t.experience.jobs as JobItem[])
 
   return (
     <section id="experience" className="py-24 scroll-mt-20">
@@ -150,7 +162,7 @@ export function ExperienceSection() {
                   </ul>
 
                   <div className={cn("flex flex-wrap gap-2 pt-4 border-t border-border/50", isRTL && "justify-end")}>
-                    {experienceSkills[index]?.map((skill) => (
+                    {(exp.skills || defaultExperienceSkills[index] || []).map((skill) => (
                       <Badge
                         key={skill}
                         variant="secondary"

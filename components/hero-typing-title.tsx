@@ -5,17 +5,19 @@ import { useLanguage } from "@/lib/language-context"
 import { cn } from "@/lib/utils"
 
 const titlesEn = [
-  "Data Science & Artificial Intelligence",
+  "AI-Powered Applications",
   "Autonomous AI Agents & LangGraph",
-  "Full-Stack Web Engineering (Next.js / Django)",
-  "Computer Vision & Workflow Automation",
+  "Full-Stack Web Engineering (Next.js / Django / FastAPI)",
+  "Computer Vision & Video Inspection",
+  "Enterprise Digital Transformation & Multi-Tenant SaaS",
 ]
 
 const titlesAr = [
-  "علوم البيانات والذكاء الاصطناعي",
+  "تطبيقات مدعومة بالذكاء الاصطناعي",
   "وكلاء الذكاء الاصطناعي و LangGraph",
-  "تطوير البرمجيات المتكاملة (Next.js / Django)",
-  "الرؤية الحاسوبية وأتمتة العمليات",
+  "تطوير البرمجيات المتكاملة (Next.js / Django / FastAPI)",
+  "الرؤية الحاسوبية وفحص المركبات الذكي",
+  "حلول التحول الرقمي والأنظمة متعددة المستأجرين",
 ]
 
 export function HeroTypingTitle({ className }: { className?: string }) {

@@ -29,43 +29,99 @@ interface ProjectItem {
 const fallbackProjects: ProjectItem[] = [
   {
     id: "1",
-    slug: "ai-avatar-order-system",
-    titleEn: "Real-Time Multilingual AI Avatar & Order Platform",
-    titleAr: "منصة الأفاتار الذكي الفوري ونظام إدارة الطلبات",
+    slug: "digital-customs-platform",
+    titleEn: "Digital Customs Platform — Libyan Customs Authority",
+    titleAr: "منصة الجمارك الرقمية — مصلحة الجمارك الليبية",
     summaryEn:
-      "Real-time voice conversational avatar with lip-sync alignment integrated with an order management ecosystem.",
+      "Bilingual digital customs platform digitizing import/export clearance with React, FastAPI, PostgreSQL, and AI shipment risk analysis, OCR, and forgery detection.",
     summaryAr:
-      "أفاتار ذكي للمحادثة الصوتية الفورية متعددة اللغات مع مطابقة حركة الشفاه متصل بنظام إدارة الطلبات.",
-    category: "ai_agent",
-    technologies: ["Python", "ComfyUI", "Next.js", "Django", "WebSockets", "n8n"],
+      "منصة جمركية رقمية ثنائية اللغة لأتمتة عمليات الاستيراد والتصدير مع React و FastAPI و PostgreSQL ودمج الذكاء الاصطناعي لتحليل المخاطر واستخراج البيانات بـ OCR وكشف التزوير.",
+    category: "fullstack",
+    technologies: ["React", "FastAPI", "PostgreSQL", "AI Risk Analysis", "OCR", "Document AI"],
     featured: true,
     githubUrl: "https://github.com/AbdullahOmar97",
   },
   {
     id: "2",
-    slug: "property-management-system",
-    titleEn: "Full-Stack Property Management System",
-    titleAr: "نظام شامل لإدارة العقارات والمستأجرين",
+    slug: "ai-commerce-platform",
+    titleEn: "Multi-Tenant AI-Powered Commerce Platform",
+    titleAr: "منصة تجارة إلكترونية متعددة المستأجرين بالذكاء الاصطناعي",
     summaryEn:
-      "End-to-end platform for rental contracts, lease tracking, payment processing, and maintenance dispatching.",
+      "Full-stack commerce platform with Next.js, Django, PostgreSQL, LangGraph/Gemini conversational AI ordering, POS workflows, vector search, and real-time kitchen tracking.",
     summaryAr:
-      "منصة متكاملة لإدارة عقود الإيجار، وتتبع الدفعات، والصيانة، والتواصل بين الملاك والمستأجرين.",
-    category: "fullstack",
-    technologies: ["Next.js", "React", "Django", "PostgreSQL", "Tailwind CSS"],
+      "منصة تجارة متكاملة بـ Next.js و Django و PostgreSQL مع طلب ذكي عبر LangGraph و Gemini، وسير عمل POS، وبحث متجهي، وتتبع فوري للطلبات.",
+    category: "ai_agent",
+    technologies: ["Next.js", "TypeScript", "Django", "LangGraph", "PostgreSQL", "Redis", "YOLO", "WebSockets"],
     featured: true,
     githubUrl: "https://github.com/AbdullahOmar97",
   },
   {
     id: "3",
-    slug: "voice-ai-agent-langgraph",
-    titleEn: "Autonomous Voice Product Ordering Agent",
-    titleAr: "وكيل صوتي ذكي مستقل للطلب بالصوت",
+    slug: "ai-vehicle-inspection",
+    titleEn: "AI-Powered Vehicle Inspection Platform",
+    titleAr: "منصة فحص المركبات الذكية بالرؤية الحاسوبية",
     summaryEn:
-      "Stateful AI agent powered by LangGraph that handles natural voice ordering and catalog navigation.",
+      "Automates vehicle identification (VIN, plate, make, model) and detects visible damage from video using computer vision models.",
     summaryAr:
-      "وكيل ذكاء اصطناعي متطور مبني بـ LangGraph لمعالجة الطلبات الصوتية والتنقل في كتالوج المنتجات.",
+      "أتمتة التعرف على المركبات (VIN، اللوحة، الموديل، اللون) وكشف الأضرار الظاهرة وتصنيفها من الفيديو باستخدام الرؤية الحاسوبية.",
     category: "ai_agent",
-    technologies: ["LangGraph", "LangChain", "Python", "FastAPI", "Gemini API"],
+    technologies: ["Python", "Computer Vision", "YOLO", "FastAPI", "Video Processing", "AI Damage Classification"],
+    featured: true,
+    githubUrl: "https://github.com/AbdullahOmar97",
+  },
+  {
+    id: "4",
+    slug: "maidan-martial-arts-saas",
+    titleEn: "Maidan — Multi-Tenant Martial Arts Academy SaaS",
+    titleAr: "ميدان — منصة SaaS متعددة المستأجرين لأكاديميات الفنون القتالية",
+    summaryEn:
+      "Schema-per-tenant SaaS architecture using django-tenants, Next.js, DRF, Celery, Redis, MinIO/S3, and Docker for martial arts academy operations and billing.",
+    summaryAr:
+      "بنية SaaS متعددة المستأجرين باستخدام django-tenants و Next.js و DRF و Celery و Redis و MinIO و Docker لإدارة الأكاديميات والفوترة الآلية.",
+    category: "fullstack",
+    technologies: ["Next.js", "TypeScript", "Django", "django-tenants", "PostgreSQL", "Celery", "Redis", "Docker"],
+    featured: true,
+    githubUrl: "https://github.com/AbdullahOmar97",
+  },
+  {
+    id: "5",
+    slug: "ai-digital-human-interaction",
+    titleEn: "Real-Time Multilingual AI Digital Human",
+    titleAr: "الإنسان الرقمي التفاعلي بالذكاء الاصطناعي الفوري",
+    summaryEn:
+      "Optimized digital human avatar for real-time multilingual voice conversation, frame-accurate lip sync, and natural facial behavior.",
+    summaryAr:
+      "نظام إنسان رقمي ذكي للمحادثة الصوتية التفاعلية متعددة اللغات مع مطابقة دقيقة لحركة الشفاه وتعابير الوجه في الوقت الفعلي.",
+    category: "ai_agent",
+    technologies: ["Python", "ComfyUI", "WebSockets", "Lip-Sync AI", "TTS / STT", "n8n"],
+    featured: true,
+    githubUrl: "https://github.com/AbdullahOmar97",
+  },
+  {
+    id: "6",
+    slug: "medical-classification-robustness",
+    titleEn: "Medical ML Classification & Noise Robustness",
+    titleAr: "تقييم ومتانة نماذج التعلم الآلي للتصنيف الطبي",
+    summaryEn:
+      "Supervised KNN and SVM classification on breast cancer data with Gaussian noise simulation, achieving 97.1% SVM accuracy and 1.17% critical error rate.",
+    summaryAr:
+      "تطبيق وتدريب مصنفات KNN و SVM على بيانات طبية حقيقية مع محاكاة ضوضاء Gaussian لتقييم المتانة، محققاً دقة 97.1% وخفض معدل الخطأ الحرج.",
+    category: "ai_agent",
+    technologies: ["Python", "Scikit-learn", "SVM", "KNN", "Noise Simulation", "Data Analysis"],
+    featured: true,
+    githubUrl: "https://github.com/AbdullahOmar97",
+  },
+  {
+    id: "7",
+    slug: "property-management-system",
+    titleEn: "Full-Stack Property Management System",
+    titleAr: "نظام شامل لإدارة العقارات والمستأجرين",
+    summaryEn:
+      "End-to-end platform for rental contracts, lease tracking, payment processing, and maintenance dispatching using Next.js and Django.",
+    summaryAr:
+      "منصة متكاملة لإدارة عقود الإيجار، وتتبع الدفعات، وتذاكر الصيانة، والتواصل بين الملاك والمستأجرين بـ Next.js و Django.",
+    category: "fullstack",
+    technologies: ["Next.js", "React", "Django REST Framework", "PostgreSQL", "Tailwind CSS"],
     featured: true,
     githubUrl: "https://github.com/AbdullahOmar97",
   },
@@ -89,8 +145,8 @@ export function ProjectsSection() {
 
   const categories = [
     { id: "all", labelEn: "All Projects", labelAr: "جميع المشاريع" },
-    { id: "ai_agent", labelEn: "AI & Agents", labelAr: "الذكاء الاصطناعي والوكلاء" },
-    { id: "fullstack", labelEn: "Full-Stack", labelAr: "تطوير شامل" },
+    { id: "ai_agent", labelEn: "AI & Vision", labelAr: "الذكاء الاصطناعي والرؤية" },
+    { id: "fullstack", labelEn: "Full-Stack & SaaS", labelAr: "تطوير شامل و SaaS" },
   ]
 
   const filteredProjects =

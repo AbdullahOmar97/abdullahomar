@@ -1,6 +1,6 @@
 "use client"
 
-import { Brain, Code2, Database, Cpu } from "lucide-react"
+import { Brain, Code2, Layers, Cpu } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { getTranslation } from "@/lib/translations"
 import { SpotlightCard } from "./spotlight-card"
@@ -23,9 +23,9 @@ export function AboutSection() {
       description: t.about.highlights.ai.description,
     },
     {
-      icon: Database,
-      title: t.about.highlights.data.title,
-      description: t.about.highlights.data.description,
+      icon: Layers,
+      title: t.about.highlights.saas.title,
+      description: t.about.highlights.saas.description,
     },
     {
       icon: Cpu,
@@ -56,40 +56,15 @@ export function AboutSection() {
             delay={100}
             className={cn("space-y-6 text-muted-foreground leading-relaxed text-base", isRTL && "text-right lg:order-2")}
           >
-            <p>
-              {language === "en" ? (
-                <>
-                  I&apos;m a Full-Stack Software Engineer specializing in{" "}
-                  <span className="text-primary font-medium">Data Science & Artificial Intelligence</span> with a Civil Engineering
-                  background. This unique combination allows me to approach problems with both analytical rigor and
-                  creative innovation.
-                </>
-              ) : (
-                <>
-                  أنا مهندس برمجيات Full-Stack متخصص في{" "}
-                  <span className="text-primary font-medium">علوم البيانات والذكاء الاصطناعي</span> مع خلفية في الهندسة المدنية. هذا
-                  المزيج الفريد يمكنني من معالجة المشكلات بدقة تحليلية وابتكار إبداعي.
-                </>
-              )}
+            <p className="text-base md:text-lg leading-relaxed text-foreground/90">
+              {t.about.paragraph1}
             </p>
             <p>
-              {language === "en" ? (
-                <>
-                  Experienced in building end-to-end systems with <span className="text-foreground font-medium">React/Next.js</span>{" "}
-                  and <span className="text-foreground font-medium">Django/FastAPI</span>, I integrate advanced AI solutions
-                  including AI Agents, LLM Orchestration, Workflow Automation, Generative AI, and Computer Vision to
-                  drive digital transformation.
-                </>
-              ) : (
-                <>
-                  لدي خبرة في بناء أنظمة متكاملة باستخدام <span className="text-foreground font-medium">React/Next.js</span> و{" "}
-                  <span className="text-foreground font-medium">Django/FastAPI</span>، حيث أدمج حلول الذكاء الاصطناعي المتقدمة بما
-                  في ذلك وكلاء الذكاء الاصطناعي، تنسيق نماذج اللغة الكبيرة، أتمتة سير العمل، الذكاء الاصطناعي التوليدي،
-                  والرؤية الحاسوبية.
-                </>
-              )}
+              {t.about.paragraph2}
             </p>
-            <p>{t.about.paragraph3}</p>
+            <p>
+              {t.about.paragraph3}
+            </p>
           </ScrollReveal>
 
           <div className={cn("grid grid-cols-1 sm:grid-cols-2 gap-4", isRTL && "lg:order-1")}>

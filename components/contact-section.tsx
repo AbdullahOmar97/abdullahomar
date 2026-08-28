@@ -29,8 +29,8 @@ const contactData = [
   {
     icon: MapPin,
     key: "location",
-    valueEn: "Amman, Jordan",
-    valueAr: "عمّان، الأردن",
+    valueEn: "Amman, Jordan, 11623",
+    valueAr: "عمّان، الأردن، 11623",
     href: null,
   },
 ]
