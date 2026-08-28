@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       config: {
         systemInstruction: CV_SYSTEM_INSTRUCTION,
         temperature: 0.7,
-        maxOutputTokens: 300,
+        maxOutputTokens: 1500,
       },
     });
 
