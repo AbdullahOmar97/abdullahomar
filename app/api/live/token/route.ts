@@ -2,9 +2,7 @@ import { GoogleGenAI, Modality } from "@google/genai";
 import { NextResponse } from "next/server";
 import { CV_SYSTEM_INSTRUCTION } from "@/lib/ai-cv-context";
 
-export async function GET(req: Request) {
-  return handleLiveToken(req);
-}
+// POST-only — ephemeral tokens must not be mintable via browser GET requests.
 
 export async function POST(req: Request) {
   return handleLiveToken(req);
@@ -26,7 +24,7 @@ async function handleLiveToken(req: Request) {
     });
 
     const expireTime = new Date(Date.now() + 30 * 60 * 1000).toISOString();
-    const newSessionExpireTime = new Date(Date.now() + 3 * 60 * 1000).toISOString();
+    const newSessionExpireTime = new Date(Date.now() + 1 * 60 * 1000).toISOString();
 
     const tokenResponse = await ai.authTokens.create({
       config: {

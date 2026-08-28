@@ -26,6 +26,7 @@ export class GeminiLiveClient {
   public outputAnalyser: AnalyserNode | null = null;
 
   private isConnected = false;
+  private isSessionReady = false;
   private isMuted = false;
   private nextPlayTime = 0;
   private activeAudioSources: AudioBufferSourceNode[] = [];
@@ -80,29 +81,9 @@ export class GeminiLiveClient {
 
       this.ws.onopen = () => {
         this.isConnected = true;
-        // Send initial setup frame required by Gemini Live WebSocket API
-        try {
-          const setupMessage = {
-            setup: {
-              model: "models/gemini-2.5-flash-preview-native-audio-dialog",
-              generationConfig: {
-                responseModalities: ["AUDIO"],
-                speechConfig: {
-                  voiceConfig: {
-                    prebuiltVoiceConfig: {
-                      voiceName: this.config.voice || "Aoede",
-                    },
-                  },
-                },
-              },
-            },
-          };
-          this.ws?.send(JSON.stringify(setupMessage));
-        } catch (setupErr) {
-          console.warn("Live setup message sending note:", setupErr);
-        }
-
-        this.startMicrophoneCapture();
+        // No setup message needed — BidiGenerateContentConstrained uses
+        // the liveConnectConstraints baked into the ephemeral token.
+        // Mic capture starts after server sends setupComplete.
         this.config.onConnect?.();
       };
 
@@ -140,7 +121,7 @@ export class GeminiLiveClient {
     this.scriptProcessor = this.inputAudioContext.createScriptProcessor(bufferSize, 1, 1);
 
     this.scriptProcessor.onaudioprocess = (e) => {
-      if (!this.isConnected || this.isMuted || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      if (!this.isConnected || !this.isSessionReady || this.isMuted || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
         return;
       }
 
@@ -207,6 +188,8 @@ export class GeminiLiveClient {
       // Handle server setup acknowledgement or errors
       if (response.setupComplete) {
         console.log("Gemini Live Session Setup Complete:", response.setupComplete);
+        this.isSessionReady = true;
+        this.startMicrophoneCapture();
       }
 
       if (response.error) {
@@ -357,6 +340,7 @@ export class GeminiLiveClient {
    */
   public cleanup() {
     this.isConnected = false;
+    this.isSessionReady = false;
     this.stopActivePlayback();
 
     if (this.scriptProcessor) {
