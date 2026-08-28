@@ -324,6 +324,9 @@ export function AIChatbot() {
         }`}
         dir={isRTL ? "rtl" : "ltr"}
       >
+        {/* Ambient Glow Aura */}
+        <div className="absolute inset-0 -m-2 rounded-full bg-primary/25 blur-xl pointer-events-none animate-aura-breath" aria-hidden="true" />
+
         {/* Direct Live Voice Trigger */}
         <Button
           onClick={() => {
@@ -332,7 +335,7 @@ export function AIChatbot() {
           }}
           aria-label={t.startLive || "Start Live Voice"}
           title={t.startLive || "Start Live Voice"}
-          className={`h-14 w-14 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-tr from-cyan-600 to-primary hover:from-cyan-500 hover:to-primary/90 text-white focus-visible:outline-2 focus-visible:outline-primary ${
+          className={`relative h-14 w-14 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 bg-gradient-to-tr from-cyan-600 to-primary hover:from-cyan-500 hover:to-primary/90 text-white focus-visible:outline-2 focus-visible:outline-primary ${
             isOpen ? "scale-0 opacity-0 pointer-events-none invisible" : "scale-100 opacity-100 pointer-events-auto visible"
           }`}
         >
@@ -352,7 +355,7 @@ export function AIChatbot() {
           aria-label={isOpen ? chatA11y?.close || "Close AI Assistant" : chatA11y?.open || "Open AI Assistant"}
           aria-expanded={isOpen}
           aria-haspopup="dialog"
-          className={`h-14 w-14 rounded-full shadow-2xl transition-all duration-300 bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:outline-2 focus-visible:outline-primary ${
+          className={`relative h-14 w-14 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:outline-2 focus-visible:outline-primary ${
             isOpen ? "scale-0 opacity-0 pointer-events-none invisible" : "scale-100 opacity-100 pointer-events-auto visible"
           }`}
         >

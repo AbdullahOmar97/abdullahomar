@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { useLanguage } from "@/lib/language-context"
 import { getTranslation } from "@/lib/translations"
+import { SpotlightCard } from "./spotlight-card"
+import { ScrollReveal } from "./scroll-reveal"
 import { cn } from "@/lib/utils"
 
 interface DBSkill {
@@ -111,7 +113,7 @@ export function SkillsSection() {
   return (
     <section id="skills" className="py-24 scroll-mt-20">
       <div className="space-y-12">
-        <div className={cn("space-y-4", isRTL && "text-right")}>
+        <ScrollReveal direction="up" className={cn("space-y-4", isRTL && "text-right")}>
           <h2
             className={cn(
               "text-3xl font-bold text-foreground flex items-center gap-3",
@@ -127,35 +129,38 @@ export function SkillsSection() {
             className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")}
             aria-hidden="true"
           />
-        </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categoriesToRender.map((category) => (
-            <div
-              key={category.key}
-              className={cn(
-                "p-6 bg-card rounded-lg border border-border hover:border-primary/50 transition-colors",
-                isRTL && "text-right"
-              )}
-            >
-              <h3 className="font-semibold text-foreground mb-4 text-lg">
-                {getCategoryTitle(category.key)}
-              </h3>
-              <div className={cn("flex flex-wrap gap-2", isRTL && "justify-end")}>
-                {category.skills.map((skill) => (
-                  <Badge
-                    key={skill}
-                    variant="outline"
-                    className="text-muted-foreground hover:text-primary hover:border-primary transition-colors"
-                  >
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+          {categoriesToRender.map((category, idx) => (
+            <ScrollReveal key={category.key} direction="up" delay={100 + idx * 75}>
+              <SpotlightCard
+                className={cn(
+                  "p-6 h-full border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300",
+                  isRTL && "text-right"
+                )}
+              >
+                <h3 className="font-bold text-foreground mb-4 text-lg flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary" aria-hidden="true" />
+                  <span>{getCategoryTitle(category.key)}</span>
+                </h3>
+                <div className={cn("flex flex-wrap gap-2", isRTL && "justify-end")}>
+                  {category.skills.map((skill) => (
+                    <Badge
+                      key={skill}
+                      variant="outline"
+                      className="text-muted-foreground hover:text-primary hover:border-primary hover:bg-primary/5 hover:scale-105 transition-all duration-200 cursor-default"
+                    >
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              </SpotlightCard>
+            </ScrollReveal>
           ))}
         </div>
       </div>
     </section>
   )
 }
+

@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/lib/language-context"
 import { getTranslation } from "@/lib/translations"
+import { SpotlightCard } from "./spotlight-card"
+import { ScrollReveal } from "./scroll-reveal"
 import { cn } from "@/lib/utils"
 
 interface ProjectItem {
@@ -99,7 +101,7 @@ export function ProjectsSection() {
   return (
     <section id="projects" className="py-24 scroll-mt-20">
       <div className="space-y-12">
-        <div className={cn("space-y-4", isRTL && "text-right")}>
+        <ScrollReveal direction="up" className={cn("space-y-4", isRTL && "text-right")}>
           <h2
             className={cn(
               "text-3xl font-bold text-foreground flex items-center gap-3",
@@ -115,91 +117,93 @@ export function ProjectsSection() {
             className={cn("w-20 h-1 bg-primary rounded-full", isRTL && "mr-0 ml-auto")}
             aria-hidden="true"
           />
-        </div>
+        </ScrollReveal>
 
         {/* Category Filters */}
-        <div className={cn("flex flex-wrap gap-2", isRTL && "justify-end")}>
+        <ScrollReveal direction="up" delay={100} className={cn("flex flex-wrap gap-2", isRTL && "justify-end")}>
           {categories.map((cat) => (
             <Button
               key={cat.id}
               variant={selectedCategory === cat.id ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(cat.id)}
-              className="rounded-full text-xs font-medium"
+              className="rounded-full text-xs font-medium transition-all duration-300 hover:scale-105"
             >
               {language === "ar" ? cat.labelAr : cat.labelEn}
             </Button>
           ))}
-        </div>
+        </ScrollReveal>
 
         {/* Projects Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className={cn(
-                "group relative flex flex-col justify-between p-6 bg-card rounded-xl border border-border hover:border-primary/50 transition-all hover:shadow-lg duration-300",
-                isRTL && "text-right"
-              )}
-            >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="p-2.5 rounded-lg bg-primary/10 text-primary">
-                    <FolderGit2 className="h-6 w-6" />
+          {filteredProjects.map((project, idx) => (
+            <ScrollReveal key={project.id} direction="up" delay={150 + idx * 80}>
+              <SpotlightCard
+                className={cn(
+                  "group relative flex flex-col justify-between p-6 h-full border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300",
+                  isRTL && "text-right"
+                )}
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2.5 rounded-xl bg-primary/10 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                      <FolderGit2 className="h-6 w-6" />
+                    </div>
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="hover:text-primary hover:scale-110 transition-all p-1"
+                          aria-label="GitHub Repository"
+                        >
+                          <Github className="h-5 w-5" />
+                        </a>
+                      )}
+                      {project.demoUrl && (
+                        <a
+                          href={project.demoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="hover:text-primary hover:scale-110 transition-all p-1"
+                          aria-label="Live Demo"
+                        >
+                          <ExternalLink className="h-5 w-5" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 text-muted-foreground">
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="hover:text-primary transition-colors"
-                        aria-label="GitHub Repository"
-                      >
-                        <Github className="h-5 w-5" />
-                      </a>
-                    )}
-                    {project.demoUrl && (
-                      <a
-                        href={project.demoUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="hover:text-primary transition-colors"
-                        aria-label="Live Demo"
-                      >
-                        <ExternalLink className="h-5 w-5" />
-                      </a>
-                    )}
+
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                      {language === "ar" ? project.titleAr : project.titleEn}
+                    </h3>
+                    <p className="text-muted-foreground text-sm mt-2 line-clamp-3 leading-relaxed">
+                      {language === "ar" ? project.summaryAr : project.summaryEn}
+                    </p>
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                    {language === "ar" ? project.titleAr : project.titleEn}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mt-2 line-clamp-3">
-                    {language === "ar" ? project.summaryAr : project.summaryEn}
-                  </p>
+                <div className="pt-6 mt-4 border-t border-border/50">
+                  <div className={cn("flex flex-wrap gap-1.5", isRTL && "justify-end")}>
+                    {project.technologies?.map((tech) => (
+                      <Badge
+                        key={tech}
+                        variant="secondary"
+                        className="font-mono text-[11px] px-2 py-0.5 hover:bg-primary/20 hover:text-primary transition-colors"
+                      >
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              <div className="pt-6 mt-4 border-t border-border/50">
-                <div className={cn("flex flex-wrap gap-1.5", isRTL && "justify-end")}>
-                  {project.technologies?.map((tech) => (
-                    <Badge
-                      key={tech}
-                      variant="secondary"
-                      className="font-mono text-[11px] px-2 py-0.5"
-                    >
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
+              </SpotlightCard>
+            </ScrollReveal>
           ))}
         </div>
       </div>
     </section>
   )
 }
+
