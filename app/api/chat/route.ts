@@ -31,27 +31,28 @@ export async function POST(req: Request) {
 
     const lastMessage = messages[messages.length - 1].content || "";
 
-    // Optional background persistence
+    // Background persistence without blocking AI streaming
     let activeConvId = conversationId;
-    if (!activeConvId && body.persist) {
+    const persistPromise = (async () => {
       try {
-        const conv = await createConversation({
-          title: lastMessage.slice(0, 50),
-          language: language || "en",
-        });
-        activeConvId = conv.id;
+        if (!activeConvId && body.persist) {
+          const conv = await createConversation({
+            title: lastMessage.slice(0, 50),
+            language: language || "en",
+          });
+          activeConvId = conv.id;
+        }
+        if (activeConvId) {
+          await addMessageToConversation({
+            conversationId: activeConvId,
+            role: "user",
+            content: lastMessage,
+          });
+        }
       } catch (e) {
-        console.warn("Could not create conversation record:", e);
+        console.warn("Background message persistence warning:", e);
       }
-    }
-
-    if (activeConvId) {
-      addMessageToConversation({
-        conversationId: activeConvId,
-        role: "user",
-        content: lastMessage,
-      }).catch((e) => console.warn("Failed to persist user message:", e));
-    }
+    })();
 
     const chat = ai.chats.create({
       model: "gemini-3.6-flash",
@@ -81,12 +82,18 @@ export async function POST(req: Request) {
             }
           }
 
-          if (activeConvId && fullAssistantResponse) {
-            addMessageToConversation({
-              conversationId: activeConvId,
-              role: "assistant",
-              content: fullAssistantResponse,
-            }).catch((e) => console.warn("Failed to persist assistant message:", e));
+          if (fullAssistantResponse) {
+            persistPromise
+              .then(async () => {
+                if (activeConvId) {
+                  await addMessageToConversation({
+                    conversationId: activeConvId,
+                    role: "assistant",
+                    content: fullAssistantResponse,
+                  });
+                }
+              })
+              .catch((e) => console.warn("Failed to persist assistant message:", e));
           }
         } catch (err) {
           controller.error(err);
@@ -99,7 +106,9 @@ export async function POST(req: Request) {
     return new Response(stream, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "no-cache",
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no",
         ...(activeConvId ? { "X-Conversation-Id": activeConvId } : {}),
       },
     });
