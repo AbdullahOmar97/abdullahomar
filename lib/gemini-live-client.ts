@@ -81,8 +81,29 @@ export class GeminiLiveClient {
 
       this.ws.onopen = () => {
         this.isConnected = true;
-        // No setup message needed — BidiGenerateContentConstrained uses
-        // the liveConnectConstraints baked into the ephemeral token.
+        // Setup frame is required as the first message — even with constrained tokens.
+        // It must match the liveConnectConstraints locked in the ephemeral token.
+        try {
+          const setupMessage = {
+            setup: {
+              model: "models/gemini-2.5-flash-preview-native-audio-dialog",
+              generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: {
+                  voiceConfig: {
+                    prebuiltVoiceConfig: {
+                      voiceName: this.config.voice || "Aoede",
+                    },
+                  },
+                },
+              },
+            },
+          };
+          this.ws?.send(JSON.stringify(setupMessage));
+        } catch (setupErr) {
+          console.error("Live setup message failed:", setupErr);
+          this.config.onError?.("Failed to send setup message");
+        }
         // Mic capture starts after server sends setupComplete.
         this.config.onConnect?.();
       };
