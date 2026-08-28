@@ -2,7 +2,15 @@ import { GoogleGenAI, Modality } from "@google/genai";
 import { NextResponse } from "next/server";
 import { CV_SYSTEM_INSTRUCTION } from "@/lib/ai-cv-context";
 
+export async function GET(req: Request) {
+  return handleLiveToken(req);
+}
+
 export async function POST(req: Request) {
+  return handleLiveToken(req);
+}
+
+async function handleLiveToken(req: Request) {
   try {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -26,7 +34,7 @@ export async function POST(req: Request) {
         expireTime,
         newSessionExpireTime,
         liveConnectConstraints: {
-          model: "models/gemini-3.1-flash-live-preview",
+          model: "models/gemini-2.5-flash-preview-native-audio-dialog",
           config: {
             responseModalities: [Modality.AUDIO],
             speechConfig: {
@@ -47,14 +55,14 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       token: tokenResponse.name,
-      model: "models/gemini-3.1-flash-live-preview",
+      model: "models/gemini-2.5-flash-preview-native-audio-dialog",
       expireTime,
     });
   } catch (error: any) {
     console.error("Gemini Live Token Minting Error:", error);
     return NextResponse.json(
       {
-        error: error.message || "Failed to mint Live API ephemeral token",
+        error: error?.message || "Failed to mint Live API ephemeral token",
         fallback: true,
       },
       { status: 500 }
