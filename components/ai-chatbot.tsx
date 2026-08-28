@@ -318,7 +318,7 @@ export function AIChatbot() {
   return (
     <>
       {/* Floating Trigger Buttons */}
-      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5">
+      <div className="fixed bottom-6 end-6 z-50 flex items-center gap-2.5 isolate">
         {/* Direct Live Voice Trigger */}
         <Button
           onClick={() => {
@@ -328,7 +328,7 @@ export function AIChatbot() {
           aria-label={t.startLive || "Start Live Voice"}
           title={t.startLive || "Start Live Voice"}
           className={`h-14 w-14 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-tr from-cyan-600 to-primary hover:from-cyan-500 hover:to-primary/90 text-white focus-visible:outline-2 focus-visible:outline-primary ${
-            isOpen ? "scale-0 opacity-0 pointer-events-none" : "scale-100 opacity-100"
+            isOpen ? "scale-0 opacity-0 pointer-events-none invisible" : "scale-100 opacity-100 pointer-events-auto visible"
           }`}
         >
           <Mic className="h-6 w-6" aria-hidden="true" />
@@ -348,7 +348,7 @@ export function AIChatbot() {
           aria-expanded={isOpen}
           aria-haspopup="dialog"
           className={`h-14 w-14 rounded-full shadow-2xl transition-all duration-300 bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:outline-2 focus-visible:outline-primary ${
-            isOpen ? "scale-0 opacity-0 pointer-events-none" : "scale-100 opacity-100"
+            isOpen ? "scale-0 opacity-0 pointer-events-none invisible" : "scale-100 opacity-100 pointer-events-auto visible"
           }`}
         >
           <MessageSquare className="h-6 w-6" aria-hidden="true" />
@@ -360,8 +360,8 @@ export function AIChatbot() {
         role="dialog"
         aria-modal="false"
         aria-label={t.title}
-        className={`fixed bottom-6 right-6 z-50 w-[420px] max-w-[calc(100vw-32px)] h-[620px] max-h-[calc(100vh-64px)] flex flex-col rounded-3xl bg-background/95 backdrop-blur-xl border border-border shadow-2xl transition-all duration-300 overflow-hidden ${
-          isOpen ? "scale-100 opacity-100" : "scale-0 opacity-0 pointer-events-none"
+        className={`fixed bottom-6 end-6 z-50 w-[420px] max-w-[calc(100vw-32px)] h-[620px] max-h-[min(620px,calc(100dvh-5rem))] flex flex-col rounded-3xl bg-background/95 backdrop-blur-xl border border-border shadow-2xl transition-all duration-300 origin-bottom-right rtl:origin-bottom-left overflow-hidden isolate ${
+          isOpen ? "scale-100 opacity-100 pointer-events-auto visible" : "scale-0 opacity-0 pointer-events-none invisible"
         }`}
         dir={language === "ar" ? "rtl" : "ltr"}
       >
