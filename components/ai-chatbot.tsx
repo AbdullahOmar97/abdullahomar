@@ -199,15 +199,8 @@ export function AIChatbot() {
       setLiveError(null)
       setLiveStatus("connecting")
 
-      // 1. Fetch ephemeral token from secure server route
-      const tokenRes = await fetch("/api/live/token", { method: "POST" })
-      const tokenData = await tokenRes.json()
-
-      if (!tokenRes.ok || !tokenData.token) {
-        throw new Error(tokenData.error || t.connectionError)
-      }
-
-      // 2. Initialize Live client
+      // 1. Create client and init audio contexts FIRST (during user gesture)
+      // This must happen before any async work to satisfy browser autoplay policy.
       const liveClient = new GeminiLiveClient({
         onConnect: () => {
           setLiveStatus("connected")
@@ -259,7 +252,19 @@ export function AIChatbot() {
         },
       })
 
+      // Init audio contexts during user gesture (before async fetch)
+      await liveClient.initAudioContexts()
       liveClientRef.current = liveClient
+
+      // 2. Fetch ephemeral token from secure server route (async)
+      const tokenRes = await fetch("/api/live/token", { method: "POST" })
+      const tokenData = await tokenRes.json()
+
+      if (!tokenRes.ok || !tokenData.token) {
+        throw new Error(tokenData.error || t.connectionError)
+      }
+
+      // 3. Connect WebSocket with token
       await liveClient.connect(tokenData.token)
     } catch (err: any) {
       console.error("Failed to start Live session:", err)

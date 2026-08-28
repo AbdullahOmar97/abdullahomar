@@ -39,40 +39,62 @@ export class GeminiLiveClient {
   }
 
   /**
-   * Connect to Gemini Live API using an ephemeral token
+   * Initialize audio contexts synchronously during user gesture.
+   * Must be called BEFORE any async work (fetch, etc.) to satisfy
+   * browser autoplay policy — async calls break the gesture chain.
+   */
+  public async initAudioContexts(): Promise<void> {
+    if (this.audioContext) return;
+
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+
+    // Output context for playback at 24kHz
+    this.audioContext = new AudioCtx({ sampleRate: 24000 });
+    this.outputAnalyser = this.audioContext.createAnalyser();
+    this.outputAnalyser.fftSize = 64;
+    this.outputAnalyser.smoothingTimeConstant = 0.8;
+    this.outputAnalyser.connect(this.audioContext.destination);
+
+    // Force resume immediately within user gesture
+    if (this.audioContext.state === "suspended") {
+      await this.audioContext.resume();
+    }
+
+    // Request microphone
+    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        channelCount: 1,
+        sampleRate: 16000,
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+    });
+
+    // Input context for capture at 16kHz
+    this.inputAudioContext = new AudioCtx({ sampleRate: 16000 });
+    this.inputAnalyser = this.inputAudioContext.createAnalyser();
+    this.inputAnalyser.fftSize = 64;
+    this.inputAnalyser.smoothingTimeConstant = 0.8;
+
+    this.inputSourceNode = this.inputAudioContext.createMediaStreamSource(this.mediaStream);
+    this.inputSourceNode.connect(this.inputAnalyser);
+  }
+
+  /**
+   * Connect to Gemini Live API using an ephemeral token.
+   * Call initAudioContexts() first during user gesture.
    */
   public async connect(token: string): Promise<void> {
     if (this.isConnected) return;
 
+    // Ensure audio contexts exist (fallback if not pre-initialized)
+    if (!this.audioContext) {
+      await this.initAudioContexts();
+    }
+
     try {
-      // 1. Initialize Web Audio Contexts
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      this.audioContext = new AudioCtx({ sampleRate: 24000 });
-      this.outputAnalyser = this.audioContext.createAnalyser();
-      this.outputAnalyser.fftSize = 64;
-      this.outputAnalyser.smoothingTimeConstant = 0.8;
-      this.outputAnalyser.connect(this.audioContext.destination);
-
-      // 2. Request user microphone
-      this.mediaStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          sampleRate: 16000,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
-
-      this.inputAudioContext = new AudioCtx({ sampleRate: 16000 });
-      this.inputAnalyser = this.inputAudioContext.createAnalyser();
-      this.inputAnalyser.fftSize = 64;
-      this.inputAnalyser.smoothingTimeConstant = 0.8;
-
-      this.inputSourceNode = this.inputAudioContext.createMediaStreamSource(this.mediaStream);
-      this.inputSourceNode.connect(this.inputAnalyser);
-
-      // 3. Connect WebSocket to Gemini Live API
+      // Connect WebSocket to Gemini Live API
       const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained?access_token=${encodeURIComponent(
         token
       )}`;
@@ -206,13 +228,14 @@ export class GeminiLiveClient {
       if (!dataText) return;
       const response = JSON.parse(dataText);
 
-      // Handle server setup acknowledgement or errors
+      // Handle server setup acknowledgement
       if (response.setupComplete) {
         console.log("Gemini Live Session Setup Complete:", response.setupComplete);
         this.isSessionReady = true;
         this.startMicrophoneCapture();
       }
 
+      // Handle server errors
       if (response.error) {
         console.error("Gemini Live Server Error:", response.error);
         this.config.onError?.(response.error.message || "Gemini Live API error");
@@ -235,9 +258,9 @@ export class GeminiLiveClient {
           this.config.onTranscription?.(this.currentModelTranscript, false, "model");
         }
 
-        // Handle incoming 24kHz PCM audio chunks
-        if (part.inlineData && part.inlineData.mimeType?.startsWith("audio/pcm")) {
-          this.playPcm24Chunk(part.inlineData.data);
+        // Handle incoming audio chunks (native audio models may vary mimeType)
+        if (part.inlineData?.data) {
+          await this.playPcm24Chunk(part.inlineData.data);
         }
       }
 
@@ -257,14 +280,15 @@ export class GeminiLiveClient {
   /**
    * Play 24kHz 16-bit PCM Audio chunk smoothly via Web Audio API
    */
-  private playPcm24Chunk(base64Data: string) {
+  private async playPcm24Chunk(base64Data: string) {
     if (!this.audioContext || !this.outputAnalyser) return;
 
-    if (this.audioContext.state === "suspended") {
-      this.audioContext.resume();
-    }
-
     try {
+      // Ensure AudioContext is running (browsers suspend without user gesture)
+      if (this.audioContext.state === "suspended") {
+        await this.audioContext.resume();
+      }
+
       const binaryString = atob(base64Data);
       const len = binaryString.length;
       const bytes = new Uint8Array(len);
