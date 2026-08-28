@@ -80,6 +80,28 @@ export class GeminiLiveClient {
 
       this.ws.onopen = () => {
         this.isConnected = true;
+        // Send initial setup frame required by Gemini Live WebSocket API
+        try {
+          const setupMessage = {
+            setup: {
+              model: "models/gemini-2.5-flash-preview-native-audio-dialog",
+              generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: {
+                  voiceConfig: {
+                    prebuiltVoiceConfig: {
+                      voiceName: this.config.voice || "Aoede",
+                    },
+                  },
+                },
+              },
+            },
+          };
+          this.ws?.send(JSON.stringify(setupMessage));
+        } catch (setupErr) {
+          console.warn("Live setup message sending note:", setupErr);
+        }
+
         this.startMicrophoneCapture();
         this.config.onConnect?.();
       };
