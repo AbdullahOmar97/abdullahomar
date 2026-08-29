@@ -15,7 +15,7 @@ export interface LiveClientConfig {
 }
 
 /**
- * Resamples any audio buffer to 16kHz PCM
+ * Resamples any input audio buffer to exactly 16,000Hz PCM
  */
 function downsampleTo16k(inputData: Float32Array, inputSampleRate: number): Float32Array {
   if (inputSampleRate === 16000) return inputData;
@@ -46,6 +46,7 @@ export class GeminiLiveClient {
   private mediaStream: MediaStream | null = null;
   private inputSourceNode: MediaStreamAudioSourceNode | null = null;
   private scriptProcessor: ScriptProcessorNode | null = null;
+  private workletNode: AudioNode | null = null;
   private silentGainNode: GainNode | null = null;
   
   public inputAnalyser: AnalyserNode | null = null;
@@ -66,7 +67,6 @@ export class GeminiLiveClient {
 
   /**
    * Initialize audio contexts synchronously during user gesture.
-   * Creates audio graph and resumes context to satisfy browser autoplay policies.
    */
   public async initAudioContexts(): Promise<void> {
     if (this.audioContext && this.audioContext.state !== "closed") {
@@ -77,7 +77,6 @@ export class GeminiLiveClient {
     }
 
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    // Create standard AudioContext at device hardware rate (universal compatibility)
     this.audioContext = new AudioCtx();
 
     if (this.audioContext.state === "suspended") {
@@ -132,7 +131,7 @@ export class GeminiLiveClient {
         try {
           const setupMessage = {
             setup: {
-              model: "models/gemini-2.5-flash-preview-native-audio-dialog",
+              model: "models/gemini-2.5-flash-native-audio-latest",
               generationConfig: {
                 responseModalities: ["AUDIO"],
                 speechConfig: {
@@ -177,69 +176,122 @@ export class GeminiLiveClient {
   }
 
   /**
-   * Start processing microphone buffer to 16kHz PCM chunks
+   * Process raw input samples to 16kHz PCM and send via WebSocket
    */
-  private startMicrophoneCapture() {
+  private processAndSendAudio(rawInput: Float32Array, currentSampleRate: number) {
+    if (!this.isConnected || !this.isSessionReady || this.isMuted || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    // Calculate audio power for speaking indicator
+    let sum = 0;
+    for (let i = 0; i < rawInput.length; i++) {
+      sum += rawInput[i] * rawInput[i];
+    }
+    const rms = Math.sqrt(sum / rawInput.length);
+    const isVoiceActive = rms > 0.02;
+    this.config.onUserSpeaking?.(isVoiceActive);
+
+    // Downsample to exactly 16000Hz PCM required by Gemini API
+    const downsampled = downsampleTo16k(rawInput, currentSampleRate);
+
+    // Convert Float32Array to 16-bit Linear PCM (Little Endian)
+    const pcm16 = new Int16Array(downsampled.length);
+    for (let i = 0; i < downsampled.length; i++) {
+      const s = Math.max(-1, Math.min(1, downsampled[i]));
+      pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+
+    // Convert buffer to Base64
+    const bytes = new Uint8Array(pcm16.buffer, pcm16.byteOffset, pcm16.byteLength);
+    let binary = "";
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const base64Audio = btoa(binary);
+
+    // Send realtime PCM chunk to Gemini (raw WebSocket JSON schema: realtimeInput.mediaChunks)
+    const message = {
+      realtimeInput: {
+        mediaChunks: [
+          {
+            mimeType: "audio/pcm;rate=16000",
+            data: base64Audio,
+          },
+        ],
+      },
+    };
+
+    this.ws.send(JSON.stringify(message));
+  }
+
+  /**
+   * Start microphone capture using AudioWorklet (preferred) or ScriptProcessor fallback
+   */
+  private async startMicrophoneCapture() {
     if (!this.audioContext || !this.inputSourceNode) return;
 
     if (this.audioContext.state === "suspended") {
-      this.audioContext.resume().catch((e) => console.warn("AudioContext resume note:", e));
+      await this.audioContext.resume().catch((e) => console.warn("AudioContext resume note:", e));
     }
-
-    const bufferSize = 4096;
-    this.scriptProcessor = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
-
-    // Silent gain prevents mic input feedback through speaker output while keeping processor active
-    this.silentGainNode = this.audioContext.createGain();
-    this.silentGainNode.gain.value = 0;
 
     const currentSampleRate = this.audioContext.sampleRate;
 
-    this.scriptProcessor.onaudioprocess = (e) => {
-      if (!this.isConnected || !this.isSessionReady || this.isMuted || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+    // Try AudioWorklet first
+    if (typeof AudioWorkletNode !== "undefined" && this.audioContext.audioWorklet) {
+      try {
+        const workletCode = `
+          class PCMRecorderProcessor extends AudioWorkletProcessor {
+            constructor() {
+              super();
+              this.buffer = new Float32Array(2048);
+              this.bufferIndex = 0;
+            }
+            process(inputs) {
+              const input = inputs[0];
+              if (input && input.length > 0 && input[0]) {
+                const channelData = input[0];
+                for (let i = 0; i < channelData.length; i++) {
+                  this.buffer[this.bufferIndex++] = channelData[i];
+                  if (this.bufferIndex >= this.buffer.length) {
+                    this.port.postMessage(this.buffer.slice(0));
+                    this.bufferIndex = 0;
+                  }
+                }
+              }
+              return true;
+            }
+          }
+          registerProcessor('pcm-recorder-processor', PCMRecorderProcessor);
+        `;
+        const blob = new Blob([workletCode], { type: "application/javascript" });
+        const workletUrl = URL.createObjectURL(blob);
+        await this.audioContext.audioWorklet.addModule(workletUrl);
+        URL.revokeObjectURL(workletUrl);
+
+        const workletNode = new AudioWorkletNode(this.audioContext, "pcm-recorder-processor");
+        workletNode.port.onmessage = (e) => {
+          const rawInput = e.data as Float32Array;
+          this.processAndSendAudio(rawInput, currentSampleRate);
+        };
+
+        this.inputSourceNode.connect(workletNode);
+        this.workletNode = workletNode;
         return;
+      } catch (workletErr) {
+        console.warn("AudioWorklet fallback to ScriptProcessor:", workletErr);
       }
+    }
 
+    // Fallback: ScriptProcessorNode
+    const bufferSize = 4096;
+    this.scriptProcessor = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
+    this.silentGainNode = this.audioContext.createGain();
+    this.silentGainNode.gain.value = 0;
+
+    this.scriptProcessor.onaudioprocess = (e) => {
       const rawInput = e.inputBuffer.getChannelData(0);
-      
-      // Calculate audio power for speaking indicator
-      let sum = 0;
-      for (let i = 0; i < rawInput.length; i++) {
-        sum += rawInput[i] * rawInput[i];
-      }
-      const rms = Math.sqrt(sum / rawInput.length);
-      const isVoiceActive = rms > 0.02;
-      this.config.onUserSpeaking?.(isVoiceActive);
-
-      // Downsample to exactly 16000Hz PCM required by Gemini API
-      const downsampled = downsampleTo16k(rawInput, currentSampleRate);
-
-      // Convert Float32Array to 16-bit Linear PCM (Little Endian)
-      const pcm16 = new Int16Array(downsampled.length);
-      for (let i = 0; i < downsampled.length; i++) {
-        const s = Math.max(-1, Math.min(1, downsampled[i]));
-        pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
-      }
-
-      // Convert buffer to Base64
-      const bytes = new Uint8Array(pcm16.buffer, pcm16.byteOffset, pcm16.byteLength);
-      let binary = "";
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64Audio = btoa(binary);
-
-      // Send realtime PCM audio chunk to Gemini (official format)
-      const message = {
-        realtimeInput: {
-          audio: {
-            data: base64Audio,
-            mimeType: "audio/pcm;rate=16000",
-          },
-        },
-      };
-
-      this.ws.send(JSON.stringify(message));
+      this.processAndSendAudio(rawInput, currentSampleRate);
     };
 
     this.inputSourceNode.connect(this.scriptProcessor);
@@ -268,7 +320,7 @@ export class GeminiLiveClient {
       if (response.setupComplete) {
         console.log("Gemini Live Session Setup Complete:", response.setupComplete);
         this.isSessionReady = true;
-        this.startMicrophoneCapture();
+        await this.startMicrophoneCapture();
       }
 
       // Handle server errors
@@ -298,7 +350,7 @@ export class GeminiLiveClient {
         this.config.onTranscription?.(this.currentModelTranscript, false, "model");
       }
 
-      // 3. Handle Model Turn (Audio + Text parts)
+      // 4. Handle Model Turn (Audio + Text parts)
       const parts = response.serverContent?.modelTurn?.parts || [];
       for (const part of parts) {
         if (part.text) {
@@ -313,7 +365,7 @@ export class GeminiLiveClient {
         }
       }
 
-      // 4. Handle Turn Complete
+      // 5. Handle Turn Complete
       if (response.serverContent?.turnComplete) {
         if (this.currentModelTranscript) {
           this.config.onTranscription?.(this.currentModelTranscript, true, "model");
@@ -403,10 +455,15 @@ export class GeminiLiveClient {
   public sendTextMessage(text: string) {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
 
-    // Send realtime text message to Gemini (official format)
     const message = {
-      realtimeInput: {
-        text,
+      clientContent: {
+        turns: [
+          {
+            role: "user",
+            parts: [{ text }],
+          },
+        ],
+        turnComplete: true,
       },
     };
 
@@ -436,6 +493,13 @@ export class GeminiLiveClient {
     this.isConnected = false;
     this.isSessionReady = false;
     this.stopActivePlayback();
+
+    if (this.workletNode) {
+      try {
+        this.workletNode.disconnect();
+      } catch (_) {}
+      this.workletNode = null;
+    }
 
     if (this.scriptProcessor) {
       try {

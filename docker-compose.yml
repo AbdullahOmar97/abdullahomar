@@ -29,6 +29,8 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - DATABASE_URL=postgresql://postgres:postgres_password@postgres:5432/abdullahomar_db
+    env_file:
+      - .env.local
     depends_on:
       postgres:
         condition: service_healthy

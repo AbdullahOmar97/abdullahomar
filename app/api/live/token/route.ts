@@ -32,7 +32,7 @@ async function handleLiveToken(req: Request) {
         expireTime,
         newSessionExpireTime,
         liveConnectConstraints: {
-          model: "models/gemini-2.5-flash-preview-native-audio-dialog",
+          model: "models/gemini-2.5-flash-native-audio-latest",
           config: {
             responseModalities: [Modality.AUDIO],
             speechConfig: {
@@ -53,7 +53,7 @@ async function handleLiveToken(req: Request) {
 
     return NextResponse.json({
       token: tokenResponse.name,
-      model: "models/gemini-2.5-flash-preview-native-audio-dialog",
+      model: "models/gemini-2.5-flash-native-audio-latest",
       expireTime,
     });
   } catch (error: any) {
