@@ -3,17 +3,22 @@ import { NextResponse } from "next/server";
 import { CV_SYSTEM_INSTRUCTION } from "@/lib/ai-cv-context";
 import { addMessageToConversation, createConversation } from "@/lib/db";
 
+let aiClient: GoogleGenAI | null = null;
+
+function getGenAI(): GoogleGenAI {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured");
+  }
+  if (!aiClient) {
+    aiClient = new GoogleGenAI({ apiKey });
+  }
+  return aiClient;
+}
+
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: "GEMINI_API_KEY is not configured" },
-        { status: 500 }
-      );
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = getGenAI();
     const body = await req.json();
     const { messages, conversationId, language } = body;
 
@@ -54,9 +59,17 @@ export async function POST(req: Request) {
       }
     })();
 
-    const chat = ai.chats.create({
-      model: "gemini-3.6-flash",
-      history: history,
+    const contents = [
+      ...history,
+      {
+        role: "user",
+        parts: [{ text: lastMessage }],
+      },
+    ];
+
+    const streamResponse = await ai.models.generateContentStream({
+      model: "gemini-2.5-flash",
+      contents,
       config: {
         systemInstruction: CV_SYSTEM_INSTRUCTION,
         temperature: 0.7,
@@ -65,10 +78,6 @@ export async function POST(req: Request) {
           thinkingBudget: 0,
         },
       },
-    });
-
-    const streamResponse = await chat.sendMessageStream({
-      message: lastMessage,
     });
 
     let fullAssistantResponse = "";
