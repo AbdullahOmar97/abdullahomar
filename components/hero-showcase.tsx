@@ -53,16 +53,21 @@ export function HeroShowcase({ className }: { className?: string }) {
             transition: isHovered ? "transform 0.1s ease-out" : "transform 0.5s ease-out",
           }}
         >
-          {/* 3D Framed Card */}
-          <div className="relative w-full aspect-[16/9.5] rounded-2xl overflow-hidden border border-border/80 bg-card/90 shadow-lg flex items-center justify-center p-2 sm:p-2.5">
+          {/* 3D Framed Card with Static Shadow */}
+          <div className="relative w-full aspect-[16/9.5] rounded-2xl overflow-hidden border border-border/80 bg-card/90 shadow-xl flex items-center justify-center p-2 sm:p-2.5">
             <Image
               src="/hero-logo.jpg"
               alt=""
               width={520}
               height={300}
-              className="w-full h-full object-cover rounded-xl transition-transform duration-500 group-hover:scale-102"
+              className="w-full h-full object-cover rounded-xl transition-transform duration-700 group-hover:scale-105"
               priority
             />
+
+            {/* Continuous Metallic Shimmer Sweep Light Sheen (GPU-composited) */}
+            <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden rounded-xl">
+              <div className="absolute inset-0 -top-1/2 -bottom-1/2 w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer-sweep will-change-transform" />
+            </div>
 
             {/* Interactive Mouse Glare on Hover */}
             {isHovered && (

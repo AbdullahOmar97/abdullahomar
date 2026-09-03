@@ -9,7 +9,6 @@ import { EducationSection } from "@/components/education-section"
 import { ContactSection } from "@/components/contact-section"
 import { Navigation } from "@/components/navigation"
 import { AIChatbot } from "@/components/ai-chatbot"
-import { AmbientParticles } from "@/components/ambient-particles"
 import { LanguageProvider, useLanguage } from "@/lib/language-context"
 import { getTranslation } from "@/lib/translations"
 
@@ -19,26 +18,23 @@ function PageContent() {
 
   return (
     <>
-      <AmbientParticles />
-      <div className="relative z-10 min-h-screen bg-background/90 backdrop-blur-[1px] overflow-x-hidden w-full max-w-[100vw]">
-        <Navigation />
-        <main id="main-content" tabIndex={-1} className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 focus:outline-none w-full">
-          <HeroSection />
-          <AboutSection />
-          <ExperienceSection />
-          <ProjectsSection />
-          <SkillsSection />
-          <EducationSection />
-          <ContactSection />
-        </main>
-        <footer role="contentinfo" className="border-t border-border py-8 mt-24">
-          <div className="container mx-auto max-w-6xl px-6 lg:px-8 text-center text-muted-foreground text-sm">
-            <p>
-              © {new Date().getFullYear()} Abdullah Omar. {t.footer.rights}
-            </p>
-          </div>
-        </footer>
-      </div>
+      <Navigation />
+      <main id="main-content" tabIndex={-1} className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 focus:outline-none w-full flex-1">
+        <HeroSection />
+        <AboutSection />
+        <ExperienceSection />
+        <ProjectsSection />
+        <SkillsSection />
+        <EducationSection />
+        <ContactSection />
+      </main>
+      <footer role="contentinfo" className="border-t border-border py-8 mt-24">
+        <div className="container mx-auto max-w-6xl px-6 lg:px-8 text-center text-muted-foreground text-sm">
+          <p>
+            © {new Date().getFullYear()} Abdullah Omar. {t.footer.rights}
+          </p>
+        </div>
+      </footer>
       <AIChatbot />
     </>
   )

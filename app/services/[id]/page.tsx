@@ -65,7 +65,7 @@ function ServiceDetailContent() {
 
   if (!service) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center py-24">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Service not found</h1>
           <Button onClick={() => router.push("/services")} className="mt-4">
@@ -77,12 +77,12 @@ function ServiceDetailContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navigation />
       <main
         id="main-content"
         tabIndex={-1}
-        className="container mx-auto max-w-6xl px-6 lg:px-8 py-24 focus:outline-none"
+        className="container mx-auto max-w-6xl px-6 lg:px-8 py-24 focus:outline-none flex-1"
       >
         <Button
           variant="ghost"
@@ -164,7 +164,7 @@ function ServiceDetailContent() {
         onClose={() => setModalOpen(false)}
         serviceTitle={service.title}
       />
-    </div>
+    </>
   )
 }
 

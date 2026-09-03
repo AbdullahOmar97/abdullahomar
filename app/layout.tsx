@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Inter, Geist_Mono, Cairo } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { AmbientParticles } from "@/components/ambient-particles"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -52,8 +53,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${cairo.variable} ${geistMono.variable} font-sans antialiased`}>
-        {children}
+      <body className={`${inter.variable} ${cairo.variable} ${geistMono.variable} font-sans antialiased min-h-screen relative bg-background`}>
+        <AmbientParticles />
+        <div className="relative z-10 min-h-screen overflow-x-hidden w-full max-w-[100vw] flex flex-col">
+          {children}
+        </div>
         <Analytics />
       </body>
     </html>

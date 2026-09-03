@@ -31,7 +31,11 @@ export function AmbientParticles() {
     let width = (canvas.width = window.innerWidth)
     let height = (canvas.height = window.innerHeight)
 
-    const isDark = resolvedTheme === "dark" || !resolvedTheme
+    let isDark = document.documentElement.classList.contains("dark") || resolvedTheme === "dark" || !resolvedTheme
+    const themeObserver = new MutationObserver(() => {
+      isDark = document.documentElement.classList.contains("dark") || resolvedTheme === "dark"
+    })
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
 
     // Node count scaled for performance
     const particleCount = Math.min(Math.floor((width * height) / 22000), 55)
@@ -147,6 +151,7 @@ export function AmbientParticles() {
     render()
 
     return () => {
+      themeObserver.disconnect()
       window.removeEventListener("resize", handleResize)
       window.removeEventListener("mousemove", handleMouseMove)
       document.removeEventListener("mouseleave", handleMouseLeave)
