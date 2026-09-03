@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     if (process.env.RESEND_API_KEY) {
       try {
         const resend = new Resend(process.env.RESEND_API_KEY);
-        const toEmail = process.env.CONTACT_NOTIFICATION_EMAIL || "AbdullahOmar@outlook.com";
+        const toEmail = (process.env.CONTACT_NOTIFICATION_EMAIL || "abdullahomar@outlook.com").trim().toLowerCase();
         const fromEmail = process.env.RESEND_FROM_EMAIL || "Portfolio Contact <onboarding@resend.dev>";
 
         const { error: resendError } = await resend.emails.send({
