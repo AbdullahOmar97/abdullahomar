@@ -20,7 +20,7 @@
 // =================== CONFIGURATION ===================
 const CONFIG = {
   // Replace with your production domain (e.g. https://abdullahomar.com)
-  WEBHOOK_URL: "https://abdullahomar.com/api/sync-cv",
+  WEBHOOK_URL: "https://abdullahomar.vercel.app/api/sync-cv",
   // Must match CV_SYNC_SECRET in your .env.local
   SYNC_SECRET: "209ea401d922a76168d2476c16cf1dfac2d5dcaaa0a05b7d",
   DOC_ID: "12xqyy8FcXRNRNAFbrTG0OrNwciBWKp4C1o6pOP3JzPo",
@@ -45,8 +45,6 @@ function onOpen() {
 function syncCvToWebsite() {
   const doc = DocumentApp.getActiveDocument();
   const ui = DocumentApp.getUi();
-
-  doc.toast("Connecting to website and analyzing CV with Gemini AI...", "Syncing CV", 10);
 
   try {
     const rawText = doc.getBody().getText();
@@ -88,7 +86,6 @@ function syncCvToWebsite() {
         "• Education updated: " + (counts.education || 0);
 
       ui.alert("Sync Complete", msg, ui.ButtonSet.OK);
-      doc.toast("Sync completed successfully!", "Done", 5);
     } else {
       ui.alert(
         "Sync Failed",

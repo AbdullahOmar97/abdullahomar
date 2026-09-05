@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { SyncCvModal } from "@/components/sync-cv-modal"
 
 export function Footer() {
   const { language, isRTL } = useLanguage()
@@ -77,8 +78,9 @@ export function Footer() {
           © {new Date().getFullYear()} Abdullah Omar. {t.footer.rights}
         </p>
 
-        {/* 3D Badge Preview Controls */}
+        {/* Actions / Admin & Preview Controls */}
         <div className="flex items-center gap-2">
+          <SyncCvModal />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
