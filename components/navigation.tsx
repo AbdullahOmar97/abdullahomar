@@ -7,9 +7,11 @@ import { cn } from "@/lib/utils"
 import { ThemeToggle } from "./theme-toggle"
 import { LanguageToggle } from "./language-toggle"
 import { useLanguage } from "@/lib/language-context"
+import { useLoading } from "@/lib/loading-context"
 import { getTranslation } from "@/lib/translations"
 
 export function Navigation() {
+  const { startPageTransition } = useLoading()
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState<string>("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -73,6 +75,7 @@ export function Navigation() {
       const targetId = href.replace("#", "")
 
       if (pathname !== "/") {
+        startPageTransition()
         router.push(`/${href}`)
       } else {
         const targetElement = document.getElementById(targetId)
@@ -80,6 +83,11 @@ export function Navigation() {
           targetElement.scrollIntoView({ behavior: "smooth" })
           setActiveSection(targetId)
         }
+      }
+      setIsMobileMenuOpen(false)
+    } else if (href.startsWith("/")) {
+      if (pathname !== href) {
+        startPageTransition()
       }
       setIsMobileMenuOpen(false)
     }

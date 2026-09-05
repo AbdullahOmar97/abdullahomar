@@ -147,6 +147,26 @@ export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
   }),
 }));
 
+// 3.1 Chat Query Cache (Deduplication & Local AI Cache)
+export const chatQueryCache = pgTable(
+  "chat_query_cache",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    queryHash: varchar("query_hash", { length: 64 }).unique().notNull(),
+    normalizedQuery: text("normalized_query").notNull(),
+    language: varchar("language", { length: 10 }).default("en").notNull(),
+    response: text("response").notNull(),
+    hitCount: integer("hit_count").default(1).notNull(),
+    source: varchar("source", { length: 50 }).default("gemini").notNull(),
+    lastHitAt: timestamp("last_hit_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("idx_chat_cache_hash").on(table.queryHash),
+    index("idx_chat_cache_lang").on(table.language),
+  ]
+);
+
 // 4. Portfolio Projects
 export const projects = pgTable(
   "projects",
@@ -279,6 +299,9 @@ export type NewChatConversation = typeof chatConversations.$inferInsert;
 
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type NewChatMessage = typeof chatMessages.$inferInsert;
+
+export type ChatQueryCache = typeof chatQueryCache.$inferSelect;
+export type NewChatQueryCache = typeof chatQueryCache.$inferInsert;
 
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;

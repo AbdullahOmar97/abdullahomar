@@ -46,6 +46,15 @@ export const translations = {
         },
       },
     },
+    // Loading
+    loading: {
+      pageTitle: "Loading...",
+      pageSubtitle: "Please wait a moment",
+      dataTitle: "Updating...",
+      dataSubtitle: "Fetching data",
+      syncReady: "Ready",
+      pleaseWait: "Please wait a moment",
+    },
     // Hero
     hero: {
       greeting: "Hello, I'm",
@@ -296,6 +305,9 @@ export const translations = {
     // Footer
     footer: {
       rights: "All rights reserved.",
+      previewBadge: "Preview 3D Badge",
+      previewFullscreen: "Fullscreen Transition",
+      previewFloating: "Floating Data Fetch",
     },
   },
   ar: {
@@ -342,6 +354,15 @@ export const translations = {
           details: "تحليل متعمق لاحتياجاتك التقنية وتخطيط استراتيجي لضمان نجاح مشروعك.",
         },
       },
+    },
+    // Loading
+    loading: {
+      pageTitle: "جارٍ التحميل...",
+      pageSubtitle: "يرجى الانتظار لحظة",
+      dataTitle: "جارٍ التحديث...",
+      dataSubtitle: "جلب أحدث البيانات",
+      syncReady: "جاهز",
+      pleaseWait: "يرجى الانتظار لحظات",
     },
     // Hero
     hero: {
@@ -592,6 +613,9 @@ export const translations = {
     // Footer
     footer: {
       rights: "جميع الحقوق محفوظة.",
+      previewBadge: "معاينة شارة 3D",
+      previewFullscreen: "معاينة الانتقال (شاشة كاملة)",
+      previewFloating: "معاينة جلب البيانات (عائمة)",
     },
   },
 }

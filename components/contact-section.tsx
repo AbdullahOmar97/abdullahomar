@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useLanguage } from "@/lib/language-context"
+import { useLoading } from "@/lib/loading-context"
 import { getTranslation } from "@/lib/translations"
 import { SpotlightCard } from "./spotlight-card"
 import { ScrollReveal } from "./scroll-reveal"
@@ -50,6 +51,7 @@ const socialLinks = [
 
 export function ContactSection() {
   const { language, isRTL } = useLanguage()
+  const { startFetchLoading, endFetchLoading } = useLoading()
   const t = getTranslation(language)
 
   const [name, setName] = useState("")
@@ -67,6 +69,10 @@ export function ContactSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    startFetchLoading(
+      language === "ar" ? "جارٍ إرسال رسالتك" : "Transmitting Message",
+      language === "ar" ? "تسجيل الرسالة والمزامنة مع قاعدة البيانات..." : "Recording dispatch in database..."
+    )
 
     try {
       const res = await fetch("/api/contact", {
@@ -108,6 +114,7 @@ export function ContactSection() {
       )
     } finally {
       setIsSubmitting(false)
+      endFetchLoading()
     }
   }
 

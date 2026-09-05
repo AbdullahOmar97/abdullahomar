@@ -64,3 +64,47 @@ export async function createSkill(data: NewSkill): Promise<Skill> {
   const [result] = await db.insert(skills).values(data).returning();
   return result;
 }
+
+export async function syncProfileData({
+  newExperiences,
+  newEducation,
+  newSkills,
+}: {
+  newExperiences?: NewExperience[];
+  newEducation?: NewEducation[];
+  newSkills?: NewSkill[];
+}): Promise<{
+  experiencesCount: number;
+  educationCount: number;
+  skillsCount: number;
+}> {
+  return await db.transaction(async (tx) => {
+    let experiencesCount = 0;
+    let educationCount = 0;
+    let skillsCount = 0;
+
+    if (newExperiences && newExperiences.length > 0) {
+      await tx.delete(experiences);
+      const inserted = await tx.insert(experiences).values(newExperiences).returning();
+      experiencesCount = inserted.length;
+    }
+
+    if (newEducation && newEducation.length > 0) {
+      await tx.delete(education);
+      const inserted = await tx.insert(education).values(newEducation).returning();
+      educationCount = inserted.length;
+    }
+
+    if (newSkills && newSkills.length > 0) {
+      await tx.delete(skills);
+      const inserted = await tx.insert(skills).values(newSkills).returning();
+      skillsCount = inserted.length;
+    }
+
+    return {
+      experiencesCount,
+      educationCount,
+      skillsCount,
+    };
+  });
+}

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useLanguage } from "@/lib/language-context"
+import { useLoading } from "@/lib/loading-context"
 import { getTranslation } from "@/lib/translations"
 
 interface SubscriptionModalProps {
@@ -32,11 +33,16 @@ export function SubscriptionModal({
   const [phone, setPhone] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { language, isRTL } = useLanguage()
+  const { startFetchLoading, endFetchLoading } = useLoading()
   const t = getTranslation(language)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    startFetchLoading(
+      language === "ar" ? "جارٍ إرسال طلب الاشتراك" : "Submitting Subscription",
+      language === "ar" ? "مزامنة طلبك مع نظام المبيعات..." : "Routing request to enterprise queue..."
+    )
 
     try {
       const response = await fetch("/api/contact", {
@@ -73,6 +79,7 @@ export function SubscriptionModal({
       )
     } finally {
       setIsLoading(false)
+      endFetchLoading()
     }
   }
 

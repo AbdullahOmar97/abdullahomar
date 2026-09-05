@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, ArrowLeft, ArrowRight } from "lucide-react"
 import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
 import { SubscriptionModal } from "@/components/services/subscription-modal"
 import { useLanguage, LanguageProvider } from "@/lib/language-context"
+import { useLoading } from "@/lib/loading-context"
 import { getTranslation } from "@/lib/translations"
 import { getServiceById } from "@/lib/services"
 import Image from "next/image"
@@ -31,6 +33,7 @@ function ServiceDetailContent() {
   const params = useParams()
   const router = useRouter()
   const { language, isRTL } = useLanguage()
+  const { startFetchLoading, endFetchLoading, startPageTransition } = useLoading()
   const t = getTranslation(language)
   const [modalOpen, setModalOpen] = useState(false)
   const [dbService, setDbService] = useState<DBService | null>(null)
@@ -39,6 +42,11 @@ function ServiceDetailContent() {
 
   useEffect(() => {
     if (!id) return
+    startFetchLoading(
+      language === "ar" ? "جارٍ جلب تفاصيل الخدمة" : "Loading Service Data",
+      language === "ar" ? "مزامنة البيانات الحية مع الخادم..." : "Syncing live database record..."
+    )
+
     fetch(`/api/services/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -47,7 +55,10 @@ function ServiceDetailContent() {
         }
       })
       .catch((err) => console.warn("Using static service detail fallback:", err))
-  }, [id])
+      .finally(() => {
+        endFetchLoading()
+      })
+  }, [id, language, startFetchLoading, endFetchLoading])
 
   const staticService = getServiceById(t, id)
 
@@ -87,7 +98,13 @@ function ServiceDetailContent() {
         <Button
           variant="ghost"
           className="mb-8 gap-2 focus-visible:outline-2 focus-visible:outline-primary"
-          onClick={() => router.push("/services")}
+          onClick={() => {
+            startPageTransition(
+              language === "ar" ? "جارٍ العودة إلى الخدمات" : "Returning to Services",
+              language === "ar" ? "جارٍ تجهيز واجهة العرض..." : "Preparing interface..."
+            )
+            router.push("/services")
+          }}
           aria-label={isRTL ? "العودة إلى صفحة الخدمات" : "Back to Services page"}
         >
           {isRTL ? <ArrowRight size={16} aria-hidden="true" /> : <ArrowLeft size={16} aria-hidden="true" />}
@@ -158,6 +175,8 @@ function ServiceDetailContent() {
           </div>
         </div>
       </main>
+
+      <Footer />
 
       <SubscriptionModal
         isOpen={modalOpen}
