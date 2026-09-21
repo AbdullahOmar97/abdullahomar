@@ -138,7 +138,7 @@ export function Navigation() {
                 return (
                   <li key={item.id}>
                     <a
-                      href={pathname === "/" ? item.href : `/${item.href}`}
+                      href={item.href.startsWith("#") && pathname !== "/" ? `/${item.href}` : item.href}
                       onClick={(e) => handleNavClick(e, item.href)}
                       className={cn(
                         "relative text-sm px-3 py-1.5 rounded-full transition-all duration-200 focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary font-medium",
@@ -195,7 +195,7 @@ export function Navigation() {
                   return (
                     <li key={item.id} className="w-full">
                       <a
-                        href={pathname === "/" ? item.href : `/${item.href}`}
+                        href={item.href.startsWith("#") && pathname !== "/" ? `/${item.href}` : item.href}
                         className={cn(
                           "text-base block py-2.5 px-3 rounded-xl font-medium transition-all focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-primary",
                           isActive
