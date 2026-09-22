@@ -102,6 +102,51 @@ export interface PresignedUrlOptions {
 }
 
 /**
+ * Constructs a direct URL for public bucket objects.
+ */
+export function getPublicUrl(
+  key: string,
+  bucket: string = DEFAULT_BUCKET
+): string {
+  const safeKey = sanitizeObjectKey(key);
+  const endpoint = (process.env.AWS_ENDPOINT_URL_S3 || "").replace(/\/+$/, "");
+  const encodedKey = safeKey
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/");
+
+  return `${endpoint}/${bucket}/${encodedKey}`;
+}
+
+/**
+ * Resolves a storage key, absolute URL, or local path into a valid publicly accessible URL.
+ */
+export function resolveStorageUrl(
+  keyOrUrl?: string | null,
+  bucket: string = DEFAULT_BUCKET
+): string | null {
+  if (!keyOrUrl || typeof keyOrUrl !== "string") return null;
+
+  const trimmed = keyOrUrl.trim();
+  if (!trimmed) return null;
+
+  if (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("/") ||
+    trimmed.startsWith("data:")
+  ) {
+    return trimmed;
+  }
+
+  try {
+    return getPublicUrl(trimmed, bucket);
+  } catch {
+    return trimmed;
+  }
+}
+
+/**
  * Generates a presigned GET URL for securely downloading/viewing an object.
  */
 export async function getDownloadUrl({

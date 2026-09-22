@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { ExternalLink, Github, Sparkles, FolderGit2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,6 +25,7 @@ interface ProjectItem {
   featured: boolean
   demoUrl?: string | null
   githubUrl?: string | null
+  imageUrl?: string | null
 }
 
 const fallbackProjects: ProjectItem[] = [
@@ -190,6 +192,17 @@ export function ProjectsSection() {
                 className="group relative flex flex-col justify-between p-6 h-full border border-border/80 hover:border-primary/50 shadow-sm transition-all duration-300"
               >
                 <div className="space-y-4">
+                  {project.imageUrl && (
+                    <div className="relative w-full h-44 rounded-xl overflow-hidden border border-border/50 bg-muted/20">
+                      <Image
+                        src={project.imageUrl}
+                        alt={language === "ar" ? project.titleAr : project.titleEn}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <div className="p-2.5 rounded-xl bg-primary/10 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
                       <FolderGit2 className="h-6 w-6" />
